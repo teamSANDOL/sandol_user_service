@@ -1,44 +1,24 @@
-# 📌 Multi-Stage Dockerfile for FastAPI & Node.js Services
+# Python 3.11 이미지 사용
+FROM python:3.11-slim
 
-######################################
-# FastAPI Service
-######################################
-FROM python:3.11 AS fastapi
+# 필수 패키지 설치
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libsqlite3-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # 작업 디렉토리 설정
 WORKDIR /app
 
-# 종속성 파일 복사 및 설치
-COPY fastapi/requirements.txt .
+# 의존성 설치
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 애플리케이션 코드 복사
-COPY fastapi/ .
+# 프로젝트 코드 복사
+COPY . .
 
-# 환경 변수 설정 (필요 시 사용)
-ENV APP_ENV=production
+# SQLite DB 저장 경로 미리 생성
+RUN mkdir -p /data
 
-# 컨테이너 실행 시 기본 명령어 설정
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-
-
-######################################
-# Node.js Service
-######################################
-FROM node:18 AS nodejs
-
-# 작업 디렉토리 설정
-WORKDIR /app
-
-# 종속성 파일 복사 및 설치
-COPY nodejs/package.json nodejs/package-lock.json ./
-RUN npm install --omit=dev
-
-# 애플리케이션 코드 복사
-COPY nodejs/ .
-
-# 환경 변수 설정 (필요 시 사용)
-ENV NODE_ENV=production
-
-# 컨테이너 실행 시 기본 명령어 설정
-CMD ["node", "index.js"]
+# Django 서버 실행
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
