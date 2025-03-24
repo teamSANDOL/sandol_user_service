@@ -1,31 +1,10 @@
 services:
-  app:
-    container_name: <서비스명>-app
+  user_service:
     build: .
-    restart: always
-    env_file:
-      - .env
+    container_name: sandol_user_service
     ports:
-      - "<호스트포트>:<컨테이너포트>"
-    networks:
-      - sandol-network
-    depends_on:
-      - db
-
-  db:
-    container_name: <서비스명>-db
-    image: postgres:15
-    restart: always
-    env_file:
-      - .env
+      - "8015:8000"
     volumes:
-      - db_data:/var/lib/postgresql/data
-    networks:
-      - sandol-network
-
-networks:
-  sandol-network:
-    driver: bridge
-
-volumes:
-  db_data:
+      - .:/app                # 코드 반영 (선택)
+    environment:
+      - PYTHONUNBUFFERED=1
