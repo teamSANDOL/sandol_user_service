@@ -18,7 +18,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # SQLite DB 저장 경로 미리 생성
-RUN mkdir -p /data
+RUN mkdir -p ./data
+RUN chmod 777 ./data
 
 # Django 서버 실행
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
