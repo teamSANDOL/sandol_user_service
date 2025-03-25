@@ -17,9 +17,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 프로젝트 코드 복사
 COPY . .
 
-# SQLite DB 저장 경로 미리 생성
-RUN mkdir -p ./data
-RUN chmod 777 ./data
+# SQLite DB 저장 경로 생성
+RUN mkdir -p ./data && chmod 777 ./data
+
+# ✅ STATIC 파일 모으기 (collectstatic)
+ENV DJANGO_SETTINGS_MODULE=config.settings
+RUN python manage.py collectstatic --noinput
 
 # Django 서버 실행
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000", "--insecure"]
