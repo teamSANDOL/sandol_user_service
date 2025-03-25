@@ -131,7 +131,6 @@ FORCE_SCRIPT_NAME = "/user"
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = FORCE_SCRIPT_NAME + "/static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = os.path.join(BASE_DIR, "static")  # ✨ 꼭 추가!
 
 # Default primary key field type
