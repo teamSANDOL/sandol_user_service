@@ -124,11 +124,13 @@ USE_I18N = True
 
 USE_TZ = True
 
+FORCE_SCRIPT_NAME = "/user"
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = "/user/static/"
+STATIC_URL = FORCE_SCRIPT_NAME + "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = os.path.join(BASE_DIR, "static")  # ✨ 꼭 추가!
 
