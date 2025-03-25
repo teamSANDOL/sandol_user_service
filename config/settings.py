@@ -27,10 +27,10 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 SIGNATURE_AUTH_WHITELIST = [
-    "/swagger/",
-    "/redoc/",
-    "/openapi/",
-    "/admin/",
+    "/swagger",
+    "/redoc",
+    "/openapi",
+    "/admin",
 ]
 
 # Application definition
