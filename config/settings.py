@@ -28,11 +28,14 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 SIGNATURE_AUTH_WHITELIST = [
-    "/swagger",
-    "/redoc",
-    "/openapi",
-    "/admin",
+    "/user/swagger/",
+    "/user/redoc/",
+    "/user/openapi/",
+    "/user/admin/",
+    "/user/admin/",
+    "/user/static/",
 ]
+
 
 # Application definition
 
@@ -156,6 +159,8 @@ CSRF_TRUSTED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True  # 쿠키 포함 허용
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+
 # SECURE_SSL_REDIRECT = True  # HTTP 요청을 HTTPS로 리디렉트
 
 # swagger 설정
