@@ -20,9 +20,9 @@ COPY . .
 # SQLite DB 저장 경로 생성
 RUN mkdir -p ./data && chmod 777 ./data
 
-# ✅ STATIC 파일 모으기 (collectstatic)
+# STATIC 파일 모으기
 ENV DJANGO_SETTINGS_MODULE=config.settings
 RUN python manage.py collectstatic --noinput
 
-# Django 서버 실행
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000", "--insecure"]
+# Gunicorn으로 Django 실행
+CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--env", "SCRIPT_NAME=/user"]
