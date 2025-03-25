@@ -13,6 +13,9 @@ djangorestframework==3.15.2 ; python_version >= "3.11" and python_version < "4.0
 drf-yasg==1.21.10 ; python_version >= "3.11" and python_version < "4.0" \
     --hash=sha256:4d832e108dfe38e365101c36123576b498487d33bf27d57d6a37efb4cc773438 \
     --hash=sha256:f86d50faee3c31fcec4545985a871f832366c7fb5b77b62c48089d56ecf4f8d4
+gunicorn==23.0.0 ; python_version >= "3.11" and python_version < "4.0" \
+    --hash=sha256:ec400d38950de4dfd418cff8328b2c8faed0edb0d517d3394e457c317908ca4d \
+    --hash=sha256:f014447a0101dc57e294f6c18ca6b40227a4c90e9bdb586042628030cba004ec
 inflection==0.5.1 ; python_version >= "3.11" and python_version < "4.0" \
     --hash=sha256:1a29730d366e996aaacffb2f1f1cb9593dc38e2ddd30c91250c6dde09ea9b417 \
     --hash=sha256:f38b2b640938a4f35ade69ac3d053042959b62a0f1076a5bbaa1b9526605a8a2
