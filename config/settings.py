@@ -181,6 +181,12 @@ SWAGGER_SETTINGS = {
             'name': 'X-User-ID',
             'description': '사용자의 고유 ID'
         },
+        'X-Signature': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'X-Signature',
+            'description': 'HMAC 서명 (X-User-ID 기반 서명)',
+        },
     },
 }
 
