@@ -24,5 +24,5 @@ RUN mkdir -p ./data && chmod 777 ./data
 ENV DJANGO_SETTINGS_MODULE=config.settings
 RUN python manage.py collectstatic --noinput
 
-# Gunicorn으로 Django 실행
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--env", "SCRIPT_NAME=/user"]
+# ✅ Gunicorn 실행 전 마이그레이션 수행
+CMD bash -c "python manage.py makemigrations && python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:8000 --env SCRIPT_NAME=/user"
