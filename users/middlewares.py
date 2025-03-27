@@ -15,6 +15,8 @@ class SignatureAuthMiddleware(MiddlewareMixin):
 
         user_id = request.headers.get("X-User-ID")
         if not user_id:
+            if settings.DEBUG:
+                print(f"[DEBUG] {request.path} - Unauthorized\n header: {request.headers}")
             return JsonResponse({"error": "Unauthorized"}, status=401)
 
         setattr(request, "user_id", user_id)

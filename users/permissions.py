@@ -6,7 +6,7 @@ class IsSelfOrAdmin(permissions.BasePermission):
     def has_permission(self, request, view):
         if view.action == "list":
             user = get_object_or_404(User, id=request.user_id)
-            return user.global_admin
+            return user.global_admin or user.is_service_account
 
         if view.action == "create":
             user = get_object_or_404(User, id=request.user_id)
