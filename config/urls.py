@@ -16,6 +16,7 @@ Including another URLconf
 """
 
 from django.contrib import admin
+from django.conf import settings
 from django.urls import path, include
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
@@ -27,26 +28,7 @@ schema_view = get_schema_view(
     openapi.Info(
         title="User API",
         default_version="v1",
-        description="""
-### 🛡️ 인증 방식 안내
-
-🔐 이 API는 **HMAC 기반 서명 인증**을 사용합니다.
-
-- 모든 요청에는 다음 헤더가 포함되어야 합니다:
-  - `X-User-ID`: 요청자 사용자 ID
-  - `X-Signature`: SECRET_KEY와 X-User-ID를 기반으로 생성된 HMAC 서명
-
-- `X-Signature`는 [**/test/signature?user_id=xxx**](./test/signature?user_id=1) API에서 획득할 수 있습니다 (DEBUG 모드에서만 사용 가능)
-
----
-
-### 예시
-
-```bash
-curl -H "X-User-ID: 1" -H "X-Signature: abc123..." https://your.domain/api/...
-```
-
-""",
+        description=settings.SWAGGER_DESCRIPTION,
     ),
     public=True,
     permission_classes=[permissions.AllowAny],

@@ -189,7 +189,29 @@ SWAGGER_SETTINGS = {
     },
 }
 
+SWAGGER_DESCRIPTION = """
+### 🛡️ 인증 방식 안내
+
+🔐 이 API는 **HMAC 기반 서명 인증**을 사용합니다.
+
+- 모든 요청에는 다음 헤더가 포함되어야 합니다:
+  - `X-User-ID`: 요청자 사용자 ID
+  - `X-Signature`: SECRET_KEY와 X-User-ID를 기반으로 생성된 HMAC 서명
+
+- `X-Signature`는 [**/test/signature?user_id=xxx**](./test/signature?user_id=1) API에서 획득할 수 있습니다 (DEBUG 모드에서만 사용 가능)
+
+---
+
+### 예시
+
+```bash
+curl -H "X-User-ID: 1" -H "X-Signature: abc123..." https://your.domain/api/...
+```
+
+"""
+
 
 # 시간대 설정
 TIME_ZONE = 'Asia/Seoul'  # 서버에서 사용하는 시간대 (KST)
 USE_TZ = True  # 데이터는 UTC로 저장됨
+
