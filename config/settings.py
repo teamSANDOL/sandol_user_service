@@ -36,7 +36,6 @@ SIGNATURE_AUTH_WHITELIST = [
     "/user/admin/",
     "/user/admin/",
     "/user/static/",
-    "/user/test/",
 ]
 
 

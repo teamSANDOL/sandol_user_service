@@ -10,9 +10,9 @@ def generate_signature(request):
     if not settings.DEBUG:
         return JsonResponse({"error": "Not allowed in production"}, status=403)
 
-    user_id = request.GET.get("user_id")
+    user_id = request.headers.get("X-User-ID")
     if not user_id:
-        return JsonResponse({"error": "user_id is required"}, status=400)
+        return JsonResponse({"error": "X-User-ID header is required"}, status=400)
 
     secret_key = os.environ.get("SECRET_KEY")
     if not secret_key:
@@ -24,7 +24,7 @@ def generate_signature(request):
         hashlib.sha256
     ).digest()
 
-    signature = base64.urlsafe_b64encode(raw).rstrip(b'=').decode()
+    signature = base64.urlsafe_b64encode(raw).decode().rstrip('=')
 
     return JsonResponse({
         "user_id": user_id,
