@@ -156,7 +156,9 @@ REST_FRAMEWORK = {
 }
 # CORS 설정
 CSRF_TRUSTED_ORIGINS = [
-    "https://fastapi.house.sio2.kr",
+    "https://sandol.house.sio2.kr",
+    "https://user-service:8000",
+    "https://sandol.sio2.kr"
 ]
 CORS_ALLOW_CREDENTIALS = True  # 쿠키 포함 허용
 
