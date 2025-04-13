@@ -13,10 +13,12 @@ class SignatureAuthMiddleware(MiddlewareMixin):
         if any(request.path.startswith(path) for path in self.whitelist):
             return None
 
-        user_id = request.headers.get("X-User-ID")
+        user_id = request.META.get("HTTP_X_USER_ID")
         if not user_id:
             if settings.DEBUG:
-                print(f"[DEBUG] {request.path} - Unauthorized\n header: {request.headers}")
+                print(
+                    f"[DEBUG] {request.path} - Unauthorized\n header: {request.headers}"
+                )
             return JsonResponse({"error": "Unauthorized"}, status=401)
 
         setattr(request, "user_id", user_id)
