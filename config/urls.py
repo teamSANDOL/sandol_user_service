@@ -22,7 +22,7 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
-from config.views import generate_signature
+from config.views import generate_signature, health_check
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -35,6 +35,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    path("health/", health_check),  # Health check 엔드포인트 추가
     path("admin/", admin.site.urls),
     path("api/", include("users.urls")),  # User API 엔드포인트 추가
     path("test/signature", generate_signature),  # Signature 생성 엔드포인트 추가
