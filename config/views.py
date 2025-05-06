@@ -30,3 +30,8 @@ def generate_signature(request):
         "user_id": user_id,
         "signature": signature
     })
+
+
+@api_view(["GET"])
+def health_check(request):
+    return JsonResponse({"status": "ok"})
