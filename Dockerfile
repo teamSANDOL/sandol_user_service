@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # 의존성 설치
-COPY requirements.txt .
+COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # 프로젝트 코드 복사
@@ -21,9 +21,13 @@ COPY . .
 # SQLite DB 저장 경로 생성
 RUN mkdir -p ./data && chmod 777 ./data
 
+# # ENTRYPOINT 스크립트 복사 및 실행 권한 부여
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod 777 /app/entrypoint.sh
+
 # STATIC 파일 모으기
 ENV DJANGO_SETTINGS_MODULE=config.settings
 RUN python manage.py collectstatic --noinput
 
-# DB가 없으면 자동으로 DB 초기화 후 마이그레이션 수행
-CMD bash -c "python manage.py migrate --fake-initial --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000 --env SCRIPT_NAME=/user"
+# ENTRYPOINT 지정
+CMD ["./entrypoint.sh"]
