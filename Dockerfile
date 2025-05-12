@@ -8,7 +8,6 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-
 # 작업 디렉토리 설정
 WORKDIR /app
 
@@ -26,5 +25,5 @@ RUN mkdir -p ./data && chmod 777 ./data
 ENV DJANGO_SETTINGS_MODULE=config.settings
 RUN python manage.py collectstatic --noinput
 
-# ✅ Gunicorn 실행 전 마이그레이션 수행
-CMD bash -c "python manage.py makemigrations && python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:8000 --env SCRIPT_NAME=/user"
+# DB가 없으면 자동으로 DB 초기화 후 마이그레이션 수행
+CMD bash -c "python manage.py migrate --fake-initial --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000 --env SCRIPT_NAME=/user"
