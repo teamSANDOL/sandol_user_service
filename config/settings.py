@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+
 import os
 from pathlib import Path
 
@@ -20,10 +21,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-$*l(x42p$)r1e$4nhs()m_wnc+*v_2ct()5bukr14q)f(1cka8'
+SECRET_KEY = "django-insecure-$*l(x42p$)r1e$4nhs()m_wnc+*v_2ct()5bukr14q)f(1cka8"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 APPEND_SLASH = True
 
@@ -42,58 +43,58 @@ SIGNATURE_AUTH_WHITELIST = [
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'corsheaders',
-    'drf_yasg',
-    'rest_framework',
-    'users'
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "corsheaders",
+    "drf_yasg",
+    "rest_framework",
+    "users",
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "users.middlewares.SignatureAuthMiddleware",
 ]
 
-ROOT_URLCONF = 'config.urls'
+ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+WSGI_APPLICATION = "config.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db' / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db" / "db.sqlite3",
     }
 }
 
@@ -103,27 +104,26 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
-
 
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -141,52 +141,52 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")  # ✨ 꼭 추가!
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Django Rest Framework 기본 설정
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
     ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.AllowAny",
     ],
 }
 # CORS 설정
 CSRF_TRUSTED_ORIGINS = [
     "https://sandol.house.sio2.kr",
     "https://user-service:8000",
-    "https://sandol.sio2.kr"
+    "https://sandol.sio2.kr",
 ]
 CORS_ALLOW_CREDENTIALS = True  # 쿠키 포함 허용
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 USE_X_FORWARDED_HOST = True
 
 # SECURE_SSL_REDIRECT = True  # HTTP 요청을 HTTPS로 리디렉트
 
 # swagger 설정
 SWAGGER_SETTINGS = {
-    'USE_SESSION_AUTH': True,  # 세션 인증을 사용하도록 설정
-    'SECURITY_DEFINITIONS': {
-        'CSRFToken': {
-            'type': 'apiKey',
-            'in': 'header',
-            'name': 'X-CSRFToken',
+    "USE_SESSION_AUTH": True,  # 세션 인증을 사용하도록 설정
+    "SECURITY_DEFINITIONS": {
+        "CSRFToken": {
+            "type": "apiKey",
+            "in": "header",
+            "name": "X-CSRFToken",
         },
-        'X-User-ID': {
-            'type': 'apiKey',
-            'in': 'header',
-            'name': 'X-User-ID',
-            'description': '사용자의 고유 ID'
+        "X-User-ID": {
+            "type": "apiKey",
+            "in": "header",
+            "name": "X-User-ID",
+            "description": "사용자의 고유 ID",
         },
-        'X-Signature': {
-            'type': 'apiKey',
-            'in': 'header',
-            'name': 'X-Signature',
-            'description': 'HMAC 서명 (X-User-ID 기반 서명)',
+        "X-Signature": {
+            "type": "apiKey",
+            "in": "header",
+            "name": "X-Signature",
+            "description": "HMAC 서명 (X-User-ID 기반 서명)",
         },
     },
 }
@@ -214,6 +214,5 @@ curl -H "X-User-ID: 1" -H "X-Signature: abc123..." https://your.domain/api/...
 
 
 # 시간대 설정
-TIME_ZONE = 'Asia/Seoul'  # 서버에서 사용하는 시간대 (KST)
+TIME_ZONE = "Asia/Seoul"  # 서버에서 사용하는 시간대 (KST)
 USE_TZ = True  # 데이터는 UTC로 저장됨
-
