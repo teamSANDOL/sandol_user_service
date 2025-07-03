@@ -11,10 +11,6 @@ class IsSelfOrAdmin(permissions.BasePermission):
 
         user = get_object_or_404(User, id=user_id)
 
-        # Create or Retrieve (Read)
-        if view.action in ["create", "retrieve"]:
-            return user.global_admin or user.service_account
-
         # List는 일반 사용자에게 허용하지 않음
         if view.action == "list":
             user = get_object_or_404(User, id=request.user_id)
@@ -22,7 +18,7 @@ class IsSelfOrAdmin(permissions.BasePermission):
 
         if view.action == "create":
             user = get_object_or_404(User, id=request.user_id)
-            return (user.service_account or user.global_admin)
+            return user.service_account or user.global_admin
 
         # 단일 객체 조회(retrieve)일 때, 자신이거나 관리자/서비스 계정이면 허용
         if view.action == "retrieve":
@@ -47,10 +43,8 @@ class IsSelfOrAdmin(permissions.BasePermission):
 
         if view.action in ["update", "partial_update", "destroy"]:
             return (
-            str(user.id) == str(obj.id)
-            or user.global_admin
-            or user.service_account
-        )
+                str(user.id) == str(obj.id) or user.global_admin or user.service_account
+            )
 
         # retrieve는 has_permission에서 이미 체크됨
         return True
