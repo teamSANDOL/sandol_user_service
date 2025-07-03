@@ -25,11 +25,16 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class UserGlobalAdminView(APIView):
     """사용자의 global_admin 상태 반환"""
-
+    permission_classes = [IsSelfOrAdmin]
     authentication_classes = []  # ✅ 인증 미사용
 
     def get(self, request, id):
         user = get_object_or_404(User, id=id)
+
+        # 객체 권한 검사 명시적으로 호출
+        self.check_object_permissions(request, user)
+
         return Response(
-            {"is_global_admin": user.global_admin}, status=status.HTTP_200_OK
+            {"is_global_admin": user.global_admin},
+            status=status.HTTP_200_OK,
         )
