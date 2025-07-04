@@ -216,3 +216,56 @@ curl -H "X-User-ID: 1" -H "X-Signature: abc123..." https://your.domain/api/...
 # 시간대 설정
 TIME_ZONE = "Asia/Seoul"  # 서버에서 사용하는 시간대 (KST)
 USE_TZ = True  # 데이터는 UTC로 저장됨
+
+DEFAULT_LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "require_debug_false": {
+            "()": "django.utils.log.RequireDebugFalse",
+        },
+        "require_debug_true": {
+            "()": "django.utils.log.RequireDebugTrue",
+        },
+    },
+    "formatters": {
+        "django.server": {
+            "()": "django.utils.log.ServerFormatter",
+            "format": "[{server_time}] %(levelname)s {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "%(levelname)s %(message)s",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "filters": ["require_debug_true"],
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+        "prod_console": {
+            "level": "INFO",
+            "filters": ["require_debug_false"],
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+        "server": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "django.server",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "prod_console"],
+            "level": "INFO",
+        },
+        "django.server": {
+            "handlers": ["server"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+    },
+}
