@@ -1,10 +1,29 @@
 services:
-  user_service:
-    build: .
-    container_name: sandol_user_service
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.3.2
     ports:
-      - "8015:8000"
-    volumes:
-      - .:/app                # 코드 반영 (선택)
+      - "8080:8080"
+    container_name: keycloak
+    command: "start-dev"
     environment:
-      - PYTHONUNBUFFERED=1
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://postgres:5432/testdb
+      - KC_DB_USERNAME=localmaster
+      - KC_DB_PASSWORD=qwer1234
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16-alpine3.21
+    container_name: postgres
+    environment:
+      - POSTGRES_DB=testdb
+      - POSTGRES_USER=localmaster
+      - POSTGRES_PASSWORD=qwer1234
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
