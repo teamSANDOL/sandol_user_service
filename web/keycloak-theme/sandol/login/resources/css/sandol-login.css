@@ -1,0 +1,82 @@
+/* sandol-login.css
+   목적: SANDOL 피그마 디자인 기반 Keycloak 로그인 테마 스타일
+   사용법: theme.properties 에 styles 로 등록되어 자동 로드됨
+*/
+:root {
+  --bg_gradient_start: #f6f8fb;
+  --bg_gradient_end: #eef1f7;
+  --surface_color: #ffffff;
+  --text_primary: #111111;
+  --text_secondary: #5a5f6a;
+  --border_color: #e6e9ef;
+  --focus_color: #2a66ff;
+  --brand_kakao: #fee500;
+  --brand_google_border: #dadce0;
+  --brand_apple: #000000;
+  --container_max_width: 420px;
+  --space_sm: 12px;
+  --space_md: 16px;
+  --space_lg: 24px;
+  --space_xl: 32px;
+  --radius_lg: 16px;
+  --shadow_md: 0 10px 30px rgba(0,0,0,0.08);
+}
+html, body {height:100%;}
+body.login-pf { /* Keycloak 기본 body 클래스 */
+  background: linear-gradient(160deg, var(--bg_gradient_start), var(--bg_gradient_end));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family: ui-sans-serif,-apple-system,Segoe UI,Roboto,Noto Sans KR,Apple SD Gothic Neo,Malgun Gothic,sans-serif;
+  color: var(--text_primary);
+  padding: 16px;
+}
+#kc-container-wrapper {width:100%;}
+#kc-container {display:flex; justify-content:center;}
+#kc-content {width: min(100%, var(--container_max_width));}
+#kc-content-wrapper {padding:0;}
+
+/* 카드 */
+#kc-form-wrapper, #kc-register-form {margin:0;}
+.login_card {background:var(--surface_color); border:1px solid var(--border_color); border-radius:var(--radius_lg); box-shadow:var(--shadow_md); padding:clamp(var(--space_lg),4vw,var(--space_xl));}
+.brand_area {display:flex; flex-direction:column; align-items:center; gap:12px; margin-bottom:var(--space_lg); text-align:center;}
+.brand_logo {width:56px; height:56px; border-radius:14px; background:radial-gradient(circle at 30% 30%, #7bb6ff, #2a66ff); box-shadow:0 4px 16px rgba(0,0,0,.06);}
+.brand_title {margin:0; font-size:22px; font-weight:700; letter-spacing:-0.2px;}
+.brand_subtitle {margin:0; color:var(--text_secondary); font-size:14px;}
+
+/* OAuth 버튼 */
+.oauth_list {display:grid; gap:12px; margin-top:var(--space_md);}
+.oauth_button {appearance:none; border:1px solid transparent; border-radius:999px; padding:12px 16px; width:100%; display:flex; align-items:center; gap:10px; font-size:15px; font-weight:600; text-decoration:none; cursor:pointer; transition:transform .06s ease, box-shadow .2s ease, background-color .2s ease, border-color .2s ease;}
+.oauth_button:active {transform:translateY(1px);} .oauth_text {flex:1 1 auto; text-align:center;}
+.oauth_icon {width:22px; height:22px; border-radius:50%; display:inline-grid; place-items:center; flex:0 0 22px;}
+.oauth_kakao {background:var(--brand_kakao); color:#181600;} .oauth_kakao:hover {filter:brightness(.98);} .oauth_kakao .oauth_icon {background:rgba(0,0,0,.12); font-weight:800; font-size:12px;}
+.oauth_google {background:#fff; color:#1f1f1f; border-color:var(--brand_google_border);} .oauth_google:hover {background:#fafafa; border-color:#c9ccd3;}
+.google_quadrants {width:22px; height:22px; border-radius:50%; background:#fff; border:1px solid var(--brand_google_border); display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; overflow:hidden;}
+.google_quadrants span {display:block;}
+.q1 {background:#ea4335;} .q2 {background:#fbbc05;} .q3 {background:#34a853;} .q4 {background:#4285f4;}
+.oauth_apple {background:var(--brand_apple); color:#fff;} .oauth_apple:hover {filter:brightness(1.06);} .oauth_apple .oauth_icon {background:rgba(255,255,255,.12); font-size:14px; font-weight:700;}
+
+.divider {display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:12px; color:var(--text_secondary); font-size:12px; margin:var(--space_lg) 0 var(--space_md);} .divider:before,.divider:after {content:""; height:1px; background:var(--border_color);}
+
+/* Keycloak 기본 폼 요소 커스터마이즈 */
+#kc-form {display:grid; gap:12px;}
+.form_group {display:grid; gap:6px;}
+.form_label {font-size:13px; color:var(--text_secondary);}
+input[type=text], input[type=password] {appearance:none; border:1px solid var(--border_color); border-radius:10px !important; padding:12px 14px; font-size:15px; background:#fff; transition:border-color .2s ease, box-shadow .2s ease;}
+input[type=text]:focus, input[type=password]:focus {outline:none; border-color:var(--focus_color); box-shadow:0 0 0 3px rgba(42,102,255,.18);} 
+
+/* 로그인 상태 유지 및 기타 링크 영역 */
+.form_actions_row {display:flex; justify-content:space-between; align-items:center; margin-top:4px;}
+.checkbox_row {display:inline-flex; align-items:center; gap:8px; font-size:13px; color:var(--text_secondary); user-select:none; cursor:pointer;}
+.link_text {font-size:13px; text-decoration:none; color:var(--text_secondary);} .link_text:hover {color:var(--text_primary);} 
+
+/* 기본 로그인 버튼 (kc) */
+#kc-login {appearance:none; border:0; border-radius:10px; padding:12px 16px; background:#2a66ff; color:#fff; font-weight:700; font-size:15px; cursor:pointer; width:100%; margin-top:var(--space_md); box-shadow:0 6px 16px rgba(42,102,255,.25); transition:transform .06s ease, box-shadow .2s ease, filter .2s ease;} 
+#kc-login:hover {filter:brightness(1.05); box-shadow:0 10px 22px rgba(42,102,255,.30);} 
+#kc-login:active {transform:translateY(1px);} 
+
+/* 오류 메시지 */
+#kc-error-message, .alert-error {background:#ffe5e5; color:#b40000; border:1px solid #ffb3b3; border-radius:10px; padding:12px 14px; font-size:13px; margin-bottom:12px;}
+
+/* 반응형 */
+@media (max-width: 420px) { .brand_title {font-size:20px;} }
