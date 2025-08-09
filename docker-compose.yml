@@ -12,6 +12,13 @@ services:
       - KC_DB_URL=jdbc:postgresql://postgres:5432/testdb
       - KC_DB_USERNAME=localmaster
       - KC_DB_PASSWORD=qwer1234
+      # --- 추가: 프록시/서브패스 설정 ---
+      - KC_PROXY=edge
+      - KC_PROXY_HEADERS=xforwarded
+      - KC_HTTP_RELATIVE_PATH=/auth
+      - KC_HOSTNAME_STRICT=false
+      - KC_HOSTNAME_STRICT_HTTPS=false
+      - KC_HOSTNAME_PATH=/auth
     depends_on:
       - postgres
 
