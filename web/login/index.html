@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>로그인 | SANDOL</title>
+    <style>
+      /* =========================================================
+       파일 목적:
+       - 피그마 로그인 페이지를 참고한 HTML+CSS 정적 구현본
+       - 카카오/구글/애플 OAuth2 버튼 + 아이디/비밀번호 입력 폼
+
+       사용법:
+       - 각 OAuth 버튼의 href를 실제 서버의 인증 시작 URL로 교체
+         예) /oauth2/authorize/kakao, /oauth2/authorize/google, /oauth2/authorize/apple
+       - 일반 로그인 폼의 action, method를 서비스에 맞게 설정
+       - 클래스/변수는 snake_case를 사용
+       ========================================================= */
+
+      :root {
+        /* 색상 토큰 (snake_case) */
+        --bg_gradient_start: #f6f8fb;
+        --bg_gradient_end: #eef1f7;
+        --surface_color: #ffffff;
+        --text_primary: #111111;
+        --text_secondary: #5a5f6a;
+        --border_color: #e6e9ef;
+        --focus_color: #2a66ff;
+
+        /* 브랜드 컬러 */
+        --brand_kakao: #fee500;
+        --brand_google_border: #dadce0;
+        --brand_apple: #000000;
+
+        /* 크기/레이아웃 토큰 */
+        --container_max_width: 420px;
+        --space_xs: 8px;
+        --space_sm: 12px;
+        --space_md: 16px;
+        --space_lg: 24px;
+        --space_xl: 32px;
+        --radius_md: 12px;
+        --radius_lg: 16px;
+        --shadow_sm: 0 4px 16px rgba(0, 0, 0, 0.06);
+        --shadow_md: 0 10px 30px rgba(0, 0, 0, 0.08);
+      }
+
+      /* 페이지 배경 및 센터 정렬 */
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Noto Sans KR,
+          Apple SD Gothic Neo, Malgun Gothic, sans-serif;
+        color: var(--text_primary);
+        background: linear-gradient(160deg, var(--bg_gradient_start), var(--bg_gradient_end));
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+      }
+
+      .page_container {
+        width: min(100% - 32px, var(--container_max_width));
+      }
+
+      .login_card {
+        background: var(--surface_color);
+        border: 1px solid var(--border_color);
+        border-radius: var(--radius_lg);
+        box-shadow: var(--shadow_md);
+        padding: clamp(var(--space_lg), 4vw, var(--space_xl));
+      }
+
+      .brand_area {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space_sm);
+        margin-bottom: var(--space_lg);
+        text-align: center;
+      }
+
+      .brand_logo {
+        /* 실제 로고 이미지 사용 시 <img>로 대체 */
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        background: radial-gradient(circle at 30% 30%, #7bb6ff, #2a66ff);
+        box-shadow: var(--shadow_sm);
+      }
+
+      .brand_title {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: -0.2px;
+      }
+
+      .brand_subtitle {
+        margin: 0;
+        color: var(--text_secondary);
+        font-size: 14px;
+      }
+
+      /* OAuth 버튼 리스트 */
+      .oauth_list {
+        display: grid;
+        gap: var(--space_sm);
+        margin-top: var(--space_md);
+      }
+
+      .oauth_button {
+        appearance: none;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        padding: 12px 16px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform 0.06s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+        will-change: transform;
+      }
+
+      .oauth_button:active {
+        transform: translateY(1px);
+      }
+
+      .oauth_icon {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: inline-grid;
+        place-items: center;
+        flex: 0 0 22px;
+      }
+
+      .oauth_text {
+        flex: 1 1 auto;
+        text-align: center;
+      }
+
+      /* Kakao */
+      .oauth_kakao {
+        background: var(--brand_kakao);
+        color: #181600;
+      }
+      .oauth_kakao:hover {
+        filter: brightness(0.98);
+      }
+      .oauth_kakao .oauth_icon {
+        background: rgba(0, 0, 0, 0.12);
+        color: #181600;
+        font-weight: 800;
+        font-size: 12px;
+      }
+
+      /* Google */
+      .oauth_google {
+        background: #ffffff;
+        color: #1f1f1f;
+        border-color: var(--brand_google_border);
+      }
+      .oauth_google:hover {
+        background: #fafafa;
+        border-color: #c9ccd3;
+      }
+      .google_quadrants {
+        position: relative;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: #ffffff;
+        border: 1px solid var(--brand_google_border);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        overflow: hidden;
+      }
+      .q1 { background: #ea4335; } /* red */
+      .q2 { background: #fbbc05; } /* yellow */
+      .q3 { background: #34a853; } /* green */
+      .q4 { background: #4285f4; } /* blue */
+
+      /* Apple */
+      .oauth_apple {
+        background: var(--brand_apple);
+        color: #ffffff;
+      }
+      .oauth_apple:hover {
+        filter: brightness(1.06);
+      }
+      .oauth_apple .oauth_icon {
+        background: rgba(255, 255, 255, 0.12);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      /* 구분선 */
+      .divider {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: var(--space_sm);
+        color: var(--text_secondary);
+        font-size: 12px;
+        margin: var(--space_lg) 0 var(--space_md);
+      }
+      .divider::before,
+      .divider::after {
+        content: "";
+        height: 1px;
+        background: var(--border_color);
+      }
+
+      /* 로그인 폼 */
+      .form_login {
+        display: grid;
+        gap: var(--space_sm);
+      }
+
+      .form_field {
+        display: grid;
+        gap: 6px;
+      }
+
+      .form_label {
+        font-size: 13px;
+        color: var(--text_secondary);
+      }
+
+      .form_input {
+        appearance: none;
+        border: 1px solid var(--border_color);
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-size: 15px;
+        background: #fff;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+      .form_input:focus {
+        outline: none;
+        border-color: var(--focus_color);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus_color) 18%, transparent);
+      }
+
+      .form_actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: var(--space_sm);
+      }
+
+      .checkbox_row {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--text_secondary);
+        user-select: none;
+        cursor: pointer;
+      }
+
+      .link_text {
+        font-size: 13px;
+        text-decoration: none;
+        color: var(--text_secondary);
+      }
+      .link_text:hover {
+        color: var(--text_primary);
+      }
+
+      .primary_button {
+        appearance: none;
+        border: 0;
+        border-radius: 10px;
+        padding: 12px 16px;
+        background: #2a66ff;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 15px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: var(--space_md);
+        box-shadow: 0 6px 16px rgba(42, 102, 255, 0.25);
+        transition: transform 0.06s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      }
+      .primary_button:hover {
+        filter: brightness(1.05);
+        box-shadow: 0 10px 22px rgba(42, 102, 255, 0.3);
+      }
+      .primary_button:active {
+        transform: translateY(1px);
+      }
+
+      /* 푸터(선택) */
+      .page_footer {
+        margin-top: var(--space_lg);
+        text-align: center;
+        color: var(--text_secondary);
+        font-size: 12px;
+      }
+
+      @media (max-width: 420px) {
+        .brand_title { font-size: 20px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page_container" role="main" aria-labelledby="page_title">
+      <section class="login_card" aria-label="로그인 카드">
+        <header class="brand_area">
+          <div class="brand_logo" aria-hidden="true"></div>
+          <h1 id="page_title" class="brand_title">SANDOL 로그인</h1>
+          <p class="brand_subtitle">간편하게 시작해 보세요</p>
+        </header>
+
+        <!-- OAuth2 소셜 로그인 버튼들 -->
+        <nav class="oauth_list" aria-label="소셜 로그인 선택">
+          <!-- Kakao -->
+          <a class="oauth_button oauth_kakao" href="/oauth2/authorize/kakao" aria-label="Kakao로 계속">
+            <span class="oauth_icon" aria-hidden="true">K</span>
+            <span class="oauth_text">Kakao로 계속</span>
+          </a>
+
+          <!-- Google -->
+          <a class="oauth_button oauth_google" href="/oauth2/authorize/google" aria-label="Google로 계속">
+            <span class="google_quadrants" aria-hidden="true">
+              <span class="q1"></span><span class="q2"></span>
+              <span class="q3"></span><span class="q4"></span>
+            </span>
+            <span class="oauth_text">Google로 계속</span>
+          </a>
+
+          <!-- Apple -->
+          <a class="oauth_button oauth_apple" href="/oauth2/authorize/apple" aria-label="Apple로 계속">
+            <span class="oauth_icon" aria-hidden="true"></span>
+            <span class="oauth_text">Apple로 계속</span>
+          </a>
+        </nav>
+
+        <!-- 구분선 -->
+        <div class="divider" role="separator" aria-label="또는">또는</div>
+
+        <!-- 일반 로그인 폼: action/method 교체 필요 -->
+        <form class="form_login" action="/auth/login" method="post" novalidate>
+          <div class="form_field">
+            <label class="form_label" for="user_id">아이디</label>
+            <input
+              class="form_input"
+              type="text"
+              id="user_id"
+              name="user_id"
+              autocomplete="username"
+              placeholder="아이디를 입력하세요"
+              required
+            />
+          </div>
+
+          <div class="form_field">
+            <label class="form_label" for="user_password">비밀번호</label>
+            <input
+              class="form_input"
+              type="password"
+              id="user_password"
+              name="user_password"
+              autocomplete="current-password"
+              placeholder="비밀번호를 입력하세요"
+              required
+            />
+          </div>
+
+          <div class="form_actions">
+            <label class="checkbox_row">
+              <input type="checkbox" name="remember_me" />
+              <span>로그인 상태 유지</span>
+            </label>
+            <a class="link_text" href="/auth/forgot">비밀번호 찾기</a>
+          </div>
+
+          <button class="primary_button" type="submit">로그인</button>
+        </form>
+      </section>
+
+      <p class="page_footer">계정이 없으신가요? <a class="link_text" href="/auth/register">회원가입</a></p>
+    </main>
+  </body>
+</html>
