@@ -30,7 +30,11 @@
                     <a class="sandori-btn sandori-btn-login" href="${client.baseUrl}">${msg("backToService")}</a>
                 </#if>
                 <#if !skipLink??>
-                    <a class="sandori-link" href="${url.loginUrl}">${msg("retryLogin")}</a>
+                    <#if url.loginRestartFlowUrl?? && url.loginRestartFlowUrl?has_content>
+                        <a class="sandori-link" href="${url.loginRestartFlowUrl}">${msg("retryLogin")}</a>
+                    <#else>
+                        <a class="sandori-link" href="${url.loginUrl}">${msg("retryLogin")}</a>
+                    </#if>
                 </#if>
             </div>
         </div>
