@@ -1,0 +1,693 @@
+/* ==========================================================================
+   Sandori Keycloak Login Theme — Mobile-first (풀스크린) 버전
+   기존 카드형 → Flutter WebView용 풀스크린 모바일 디자인으로 전환
+   클래스 접두사 `sandori-` 유지 (Keycloak 기본 스타일과 충돌 방지)
+   ========================================================================== */
+
+:root {
+    --sandori-primary: #4EA6AA;       /* 메인 브랜드 컬러 */
+    --sandori-text: #212226;          /* 본문 텍스트 */
+    --sandori-muted: #949BA5;         /* 보조 텍스트, placeholder */
+    --sandori-border: #A1A8B0;        /* 입력 필드 테두리 */
+    --sandori-border-light: #e0e0e0;  /* 구분선 */
+    --sandori-danger: #d93025;        /* 에러 */
+    --sandori-success: #188038;       /* 성공 */
+    --sandori-bg: #ffffff;            /* 배경 */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+    background: var(--sandori-bg) !important;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+        Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: var(--sandori-text);
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+    /* Safe Area (노치 / Dynamic Island) 대응 */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+}
+
+a,
+button,
+input,
+select,
+textarea,
+.sandori-checkbox-item {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   Keycloak base 템플릿 wrapper 리셋: 서버측 FTL 흐름은 유지하되
+   카드/회색배경/그림자를 모두 제거하고 풀스크린으로 렌더
+   -------------------------------------------------------------------------- */
+.login-pf-page,
+#kc-container,
+#kc-container-wrapper,
+#kc-content,
+#kc-content-wrapper,
+#kc-form,
+#kc-form-wrapper {
+    width: 100%;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+#kc-header,
+#kc-header-wrapper,
+#kc-page-title,
+#kc-locale,
+#kc-locale-wrapper {
+    display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   컨테이너 (풀스크린 모바일)
+   -------------------------------------------------------------------------- */
+.sandori-auth-container {
+    position: relative;
+    width: 100%;
+    max-width: 480px;                 /* 태블릿에서 과하게 넓어지는 것 방지 */
+    margin: 0 auto;
+    min-height: 100dvh;               /* 키보드 대응 (Dynamic Viewport Height) */
+    min-height: -webkit-fill-available;
+    padding: 24px 20px;
+    background: var(--sandori-bg);
+}
+
+/* 로그인 화면: 콘텐츠 세로 중앙 정렬 */
+.sandori-centered {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* --------------------------------------------------------------------------
+   언어 선택
+   -------------------------------------------------------------------------- */
+.sandori-locale-switcher {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 2px;
+    border: 1px solid #e6eaee;
+    border-radius: 999px;
+    background: rgba(248, 250, 251, 0.92);
+}
+
+.sandori-locale-option {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    min-height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    color: #8b949e;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+}
+
+.sandori-locale-option:hover,
+.sandori-locale-option:focus-visible,
+.sandori-locale-option.is-active {
+    background: #eef7f7;
+    color: var(--sandori-primary);
+    outline: none;
+}
+
+/* --------------------------------------------------------------------------
+   로고 / 헤더
+   -------------------------------------------------------------------------- */
+.sandori-logo-container {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 25px;
+}
+
+.sandori-logo-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.sandori-logo-small {
+    width: 72px;
+    height: 72px;
+    margin-bottom: 18px;
+}
+
+.sandori-header {
+    text-align: center;
+}
+
+.sandori-header h1 {
+    color: var(--sandori-text);
+}
+
+.sandori-login-title {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 40px;
+}
+
+.sandori-register-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 30px;
+}
+
+.sandori-action-title {
+    font-size: 23px;
+    font-weight: 800;
+    line-height: 1.35;
+    margin: 0 0 10px;
+}
+
+.sandori-register-subtitle,
+.sandori-action-subtitle {
+    margin: 0 0 28px;
+    color: var(--sandori-muted);
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+/* --------------------------------------------------------------------------
+   소셜 로그인 버튼
+   -------------------------------------------------------------------------- */
+.sandori-social-login {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.sandori-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 48px;                 /* 터치 영역 확보 */
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+    border: 1px solid var(--sandori-border-light);
+    background: var(--sandori-bg);
+    color: var(--sandori-text);
+    cursor: pointer;
+}
+
+.sandori-btn-kakao {
+    background-color: #FEE500;
+    color: #000000;
+    border: none;
+}
+
+.sandori-btn-google {
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px solid #ddd;
+}
+
+.sandori-btn-apple {
+    background-color: #000000;
+    color: #ffffff;
+    border: 1px solid #000000;
+}
+
+/* --------------------------------------------------------------------------
+   구분선
+   -------------------------------------------------------------------------- */
+.sandori-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: var(--sandori-muted);
+    font-size: 12px;
+    margin: 28px 0;
+}
+
+.sandori-divider::before,
+.sandori-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--sandori-border-light);
+}
+
+.sandori-divider:not(:empty)::before { margin-right: .5em; }
+.sandori-divider:not(:empty)::after { margin-left: .5em; }
+
+/* --------------------------------------------------------------------------
+   폼 / 입력 필드
+   -------------------------------------------------------------------------- */
+.sandori-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.sandori-register-form {
+    gap: 20px;
+    margin-bottom: 0;
+}
+
+.sandori-field,
+.sandori-input-group {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.sandori-input-group label {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+.sandori-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sandori-input,
+.sandori-form input:not([type="checkbox"]),
+.sandori-input-group input:not([type="checkbox"]) {
+    width: 100%;
+    height: 48px;                     /* 터치 영역 확보 */
+    border: 1px solid var(--sandori-border);
+    border-radius: 10px;
+    padding: 0 15px;
+    font-size: 16px;                  /* iOS 자동 확대 방지 (필수) */
+    color: var(--sandori-text);
+    background: var(--sandori-bg);
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.sandori-input-wrapper .sandori-input {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.sandori-select {
+    appearance: auto;
+    -webkit-appearance: menulist;
+}
+
+.sandori-input:focus,
+.sandori-form input:not([type="checkbox"]):focus,
+.sandori-input-group input:not([type="checkbox"]):focus {
+    outline: none;
+    border-color: var(--sandori-primary);
+    box-shadow: 0 0 0 3px rgba(78, 166, 170, 0.15);  /* 미세한 glow */
+}
+
+.sandori-input::placeholder {
+    color: var(--sandori-muted);
+}
+
+.sandori-input[aria-invalid="true"] {
+    border-color: var(--sandori-danger);
+}
+
+.sandori-checkbox-item.sandori-remember-row {
+    align-self: flex-start;
+    gap: 8px;
+    min-height: 24px;
+    margin-top: 2px;
+    margin-bottom: 0;
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+.sandori-remember-row input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    margin: 1px 0 0;
+    padding: 0;
+    border: 1px solid var(--sandori-border);
+    border-radius: 4px;
+    background: var(--sandori-bg);
+    cursor: pointer;
+}
+
+.sandori-remember-row input[type="checkbox"]:checked {
+    background-color: var(--sandori-primary);
+    border-color: var(--sandori-primary);
+    background-image: url("../img/check.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 12px 12px;
+}
+
+.sandori-remember-row input[type="checkbox"]:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(78, 166, 170, 0.25);
+}
+
+/* --------------------------------------------------------------------------
+   주요 버튼 (로그인 / 회원가입 / 중복확인)
+   -------------------------------------------------------------------------- */
+.sandori-btn-login,
+.sandori-btn-signup,
+.sandori-btn-secondary {
+    background-color: var(--sandori-primary);
+    color: #ffffff;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    min-height: 50px;
+    border-radius: 12px;
+}
+
+.sandori-btn-login { margin-top: 10px; }
+.sandori-btn-signup { margin-top: 30px; }
+
+.sandori-btn-secondary {
+    margin-top: 10px;
+    background: #eef7f7;
+    color: var(--sandori-primary);
+    border: 1px solid rgba(78, 166, 170, 0.22);
+}
+
+.sandori-btn-check {
+    background-color: var(--sandori-primary);
+    color: #ffffff;
+    border: none;
+    width: auto;              /* .sandori-btn 의 width:100% 를 덮어씀 (인라인 버튼) */
+    flex: 0 0 auto;
+    min-height: 48px;
+    padding: 0 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   메시지 / 필드 안내
+   -------------------------------------------------------------------------- */
+.sandori-message {
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 18px;
+    font-size: 13px;
+    line-height: 1.45;
+    text-align: left;
+}
+
+.sandori-message-error { background: #fce8e6; color: var(--sandori-danger); }
+.sandori-message-success { background: #e6f4ea; color: var(--sandori-success); }
+.sandori-message-warning { background: #fef7e0; color: #8a5a00; }
+.sandori-message-info { background: #e8f0fe; color: #174ea6; }
+
+.sandori-field-error,
+.sandori-input-message {
+    font-size: 12px;
+    color: var(--sandori-muted);
+    margin-top: 6px;
+    padding-left: 4px;
+    text-align: left;
+}
+
+.sandori-field-error { color: var(--sandori-danger); }
+
+.sandori-status-icon {
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 18px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: 800;
+}
+
+.sandori-status-info,
+.sandori-status-success {
+    background: #e8f7f8;
+    color: var(--sandori-primary);
+}
+
+.sandori-status-warning {
+    background: #fef7e0;
+    color: #8a5a00;
+}
+
+.sandori-status-error {
+    background: #fce8e6;
+    color: var(--sandori-danger);
+}
+
+.sandori-info-card {
+    margin-bottom: 18px;
+    padding: 14px;
+    border: 1px solid #edf0f2;
+    border-radius: 14px;
+    background: #fafafa;
+    color: #4D4D4D;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.sandori-action-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+}
+
+/* --------------------------------------------------------------------------
+   푸터 링크
+   -------------------------------------------------------------------------- */
+.sandori-footer-link-block,
+.sandori-signup-section {
+    margin-top: 30px;
+    font-size: 14px;
+    color: #000000;
+    text-align: center;
+}
+
+.sandori-footer-link-block a,
+.sandori-signup-section a,
+.sandori-link {
+    color: var(--sandori-primary);
+    text-decoration: underline;
+    font-weight: 700;
+}
+
+.sandori-find-account-section {
+    margin-top: 15px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.sandori-find-account-section a {
+    color: #555;
+    text-decoration: underline;
+    font-weight: 400;
+}
+
+/* --------------------------------------------------------------------------
+   이용약관 / 체크박스
+   -------------------------------------------------------------------------- */
+.sandori-terms-section {
+    margin-top: 20px;
+    border-top: 1px solid var(--sandori-border-light);
+    padding-top: 20px;
+}
+
+.sandori-terms-section h2 {
+    font-size: 14px;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #555;
+}
+
+.sandori-terms-text {
+    max-height: 160px;
+    overflow-y: auto;
+    margin-bottom: 14px;
+    padding: 14px;
+    border: 1px solid #edf0f2;
+    border-radius: 10px;
+    background: #fafafa;
+    color: #4D4D4D;
+    font-size: 12px;
+    line-height: 1.55;
+    text-align: left;
+}
+
+.sandori-terms-text a {
+    color: var(--sandori-primary);
+    font-weight: 700;
+}
+
+.sandori-required {
+    color: var(--sandori-danger);
+}
+
+.sandori-optional {
+    color: var(--sandori-muted);
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.sandori-checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sandori-checkbox-item {
+    display: flex;
+    align-items: center;
+    min-height: 44px;                 /* 터치 영역 확보 */
+    font-size: 14px;
+    color: #4D4D4D;
+    cursor: pointer;
+}
+
+/* 커스텀 체크박스는 약관 그룹에만 적용 (로그인 rememberMe 등은 기본 유지) */
+.sandori-checkbox-group .sandori-checkbox-item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    margin: 0;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.sandori-checkbox-group .sandori-checkbox-item label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    width: 100%;
+}
+
+.sandori-checkbox-group .sandori-checkbox-item label::before {
+    content: '';
+    display: inline-block;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--sandori-border);
+    border-radius: 4px;
+    margin-right: 10px;
+    background: var(--sandori-bg);
+}
+
+.sandori-checkbox-group .sandori-checkbox-item input[type="checkbox"]:checked + label::before {
+    background-color: var(--sandori-primary);
+    border-color: var(--sandori-primary);
+    background-image: url("../img/check.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 14px 14px;
+}
+
+.sandori-checkbox-group .sandori-checkbox-item input[type="checkbox"]:focus-visible + label::before {
+    box-shadow: 0 0 0 3px rgba(78, 166, 170, 0.25);
+}
+
+.sandori-check-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 24px;
+    color: #4D4D4D;
+    font-size: 13px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.sandori-terms-row {
+    align-items: flex-start;
+}
+
+.sandori-check-row input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+    padding: 0;
+}
+
+.sandori-checkmark {
+    display: inline-flex;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--sandori-border);
+    border-radius: 4px;
+    background: var(--sandori-bg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 14px 14px;
+}
+
+.sandori-check-label {
+    line-height: 1.45;
+}
+
+.sandori-check-row input[type="checkbox"]:checked + .sandori-checkmark {
+    background-color: var(--sandori-primary);
+    border-color: var(--sandori-primary);
+    background-image: url("../img/check.png");
+}
+
+.sandori-check-row input[type="checkbox"]:focus-visible + .sandori-checkmark {
+    box-shadow: 0 0 0 3px rgba(78, 166, 170, 0.25);
+}
+
+/* --------------------------------------------------------------------------
+   Hover 효과: 마우스 지원 기기에서만 (모바일 터치 잔상 방지)
+   -------------------------------------------------------------------------- */
+@media (hover: hover) {
+    .sandori-btn:hover,
+    .sandori-btn-login:hover,
+    .sandori-btn-signup:hover,
+    .sandori-btn-check:hover {
+        opacity: 0.92;
+    }
+}

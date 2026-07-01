@@ -1,36 +1,69 @@
 services:
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.3.2
-    ports:
-      - "8080:8080"
-    container_name: keycloak
-    command: "start-dev"
+  keycloak-db:
+    container_name: keycloak-db
+    image: postgres:16-alpine
     environment:
-      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
-      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
-      - KC_DB=postgres
-      - KC_DB_URL=jdbc:postgresql://postgres:5432/testdb
-      - KC_DB_USERNAME=localmaster
-      - KC_DB_PASSWORD=qwer1234
-      # --- 추가: 프록시/서브패스 설정 ---
-      - KC_PROXY=edge
-      - KC_PROXY_HEADERS=xforwarded
-      - KC_HTTP_RELATIVE_PATH=/auth
-      - KC_HOSTNAME_STRICT=false
-      - KC_HOSTNAME_STRICT_HTTPS=false
-      - KC_HOSTNAME_PATH=/auth
-    depends_on:
-      - postgres
-
-  postgres:
-    image: postgres:16-alpine3.21
-    container_name: postgres
-    environment:
-      - POSTGRES_DB=testdb
-      - POSTGRES_USER=localmaster
-      - POSTGRES_PASSWORD=qwer1234
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: ${KC_DB_USERNAME}
+      POSTGRES_PASSWORD: ${KC_DB_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - keycloak_db_data:/var/lib/postgresql/data
+    networks:
+      - sandol_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d keycloak -U ${KC_DB_USERNAME}"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 20s
+    restart: always
+
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:26.3.2
+    command: ["start"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USERNAME:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: ${KC_DB_USERNAME}
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD}
+      KC_HOSTNAME: ${SERVICE_DOMAIN:-sandori.kr}
+      KC_HTTP_ENABLED: "true"
+      KC_HTTP_PORT: "8080"
+      KC_HTTP_RELATIVE_PATH: /auth
+      KC_PROXY_HEADERS: xforwarded
+      KC_HOSTNAME_STRICT: "true"
+      KC_HEALTH_ENABLED: "true"
+      KC_LOG_CATEGORY__ORG_FREEMARKER__LEVEL: DEBUG
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+      - ./web/keycloak-theme:/opt/keycloak/themes:ro
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    networks:
+      - sandol_network
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "exec 3<>/dev/tcp/127.0.0.1/9000 && printf 'GET /auth/health/live HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 && head -n 1 <&3 | grep -q 'HTTP/1.1 200'"
+        ]
+      interval: 1m30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: always
 
 volumes:
-  postgres_data:
+  keycloak_db_data:
+    name: sandol_team_keycloak_db_data
+  keycloak_data:
+    name: sandol_team_keycloak_data
+
+networks:
+  sandol_network:
+    external: true
+    name: sandol_team_sandol_network
