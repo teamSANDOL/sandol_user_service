@@ -30,8 +30,10 @@
                     <a class="sandori-btn sandori-btn-login" href="${client.baseUrl}">${msg("backToService")}</a>
                 </#if>
                 <#if !skipLink??>
-                    <#if url.loginRestartFlowUrl?? && url.loginRestartFlowUrl?has_content>
-                        <a class="sandori-link" href="${url.loginRestartFlowUrl}">${msg("retryLogin")}</a>
+                    <#if client?? && client.clientId?? && client.clientId == "sandol-meal-web">
+                        <a class="sandori-link" href="/meal-web/auth/login">${msg("retryLogin")}</a>
+                    <#elseif client?? && client.baseUrl?has_content>
+                        <a class="sandori-link" href="${client.baseUrl}">${msg("retryLogin")}</a>
                     <#else>
                         <a class="sandori-link" href="${url.loginUrl}">${msg("retryLogin")}</a>
                     </#if>
