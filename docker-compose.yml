@@ -34,6 +34,8 @@ services:
       KC_HTTP_PORT: "8080"
       KC_HTTP_RELATIVE_PATH: /auth
       KC_PROXY_HEADERS: xforwarded
+      # keycloak_edge 네트워크 서브넷과 짝. 서브넷을 바꾸면 함께 수정할 것
+      KC_PROXY_TRUSTED_ADDRESSES: 172.31.255.248/29
       KC_HOSTNAME_STRICT: "true"
       KC_HEALTH_ENABLED: "true"
       KC_LOG_CATEGORY__ORG_FREEMARKER__LEVEL: DEBUG
@@ -44,7 +46,10 @@ services:
       keycloak-db:
         condition: service_healthy
     networks:
-      - sandol_network
+      sandol_network: {}
+      keycloak_edge:
+        aliases:
+          - keycloak-edge
     healthcheck:
       test:
         [
@@ -67,3 +72,7 @@ networks:
   sandol_network:
     external: true
     name: sandol_team_sandol_network
+  # 루트 compose(tuk_sandol_team)가 만드는 네트워크라 루트 스택을 먼저 기동해야 함
+  keycloak_edge:
+    external: true
+    name: sandol_keycloak_edge
