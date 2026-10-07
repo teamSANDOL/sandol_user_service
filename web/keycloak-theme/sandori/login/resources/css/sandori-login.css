@@ -222,10 +222,19 @@ textarea,
     cursor: pointer;
 }
 
+/* 카카오 디자인 가이드: 컨테이너 #FEE500, 심볼 #000, 레이블 #000 85% */
 .sandori-btn-kakao {
     background-color: #FEE500;
-    color: #000000;
+    color: rgba(0, 0, 0, 0.85);
     border: none;
+    gap: 8px;
+    font-size: 18px;                  /* 공식 버튼 실측: 글자 높이 = 버튼의 약 0.28 */
+}
+
+.sandori-btn-kakao img {
+    height: 14px;                     /* 공식 버튼 기준 심볼 높이 = 버튼의 약 0.28 */
+    width: 14px;
+    transform: translateY(1px);       /* 한글 글자 중심에 맞춤(실측) */
 }
 
 .sandori-btn-google {
@@ -237,7 +246,19 @@ textarea,
 .sandori-btn-apple {
     background-color: #000000;
     color: #ffffff;
-    border: 1px solid #000000;
+    border: none;
+    height: 48px;                     /* HIG: 로고 높이 = 버튼 높이 */
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 0 8%;                    /* HIG: 제목-오른쪽 끝 여백 >= 너비 8% */
+    font-size: 18px;                  /* 공식 버튼 실측: 글자 높이 = 버튼의 약 0.28 */
+    font-weight: 500;
+}
+
+.sandori-btn-apple img {
+    height: 48px;                     /* 애플 공식 버튼처럼 로고+제목을 가운데에 묶음 */
+    width: auto;
+    transform: translateY(3px);       /* 한글 글자 중심에 맞춤(실측) */
 }
 
 /* --------------------------------------------------------------------------

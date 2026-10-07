@@ -34,9 +34,9 @@
                         <#list social.providers as p>
                             <#assign providerClass = p.alias?lower_case>
                             <a id="social-${p.alias}" class="sandori-btn sandori-btn-${providerClass}" href="${p.loginUrl}">
-                                <#if p.alias?lower_case == "kakao">${msg("socialLoginKakao")}
+                                <#if p.alias?lower_case == "kakao"><img src="${url.resourcesPath}/img/kakao-symbol.svg" alt="" aria-hidden="true"><span>${msg("socialLoginKakao")}</span>
                                 <#elseif p.alias?lower_case == "google">${msg("socialLoginGoogle")}
-                                <#elseif p.alias?lower_case == "apple">${msg("socialLoginApple")}
+                                <#elseif p.alias?lower_case == "apple"><img src="${url.resourcesPath}/img/apple-logo-white.svg" alt="" aria-hidden="true"><span>${msg("socialLoginApple")}</span>
                                 <#else>${msg("socialLoginGeneric", p.displayName!p.alias)}</#if>
                             </a>
                         </#list>
