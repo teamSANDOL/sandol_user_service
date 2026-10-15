@@ -898,7 +898,6 @@
             "enabled": true,
             "alwaysDisplayInConsole": false,
             "clientAuthenticatorType": "client-secret",
-            "secret": "REDACTED_CLIENT_SECRET",
             "redirectUris": [
                 "https://sandol.house.sio2.kr/relay/oidc/callback"
             ],
@@ -1089,7 +1088,6 @@
             "enabled": true,
             "alwaysDisplayInConsole": false,
             "clientAuthenticatorType": "client-secret",
-            "secret": "REDACTED_CLIENT_SECRET",
             "redirectUris": [
                 "https://sandol.house.sio2.kr/kakao-chatbot/",
                 "https://sandol.house.sio2.kr/relay/oidc/callback"
@@ -1211,7 +1209,6 @@
             "enabled": true,
             "alwaysDisplayInConsole": false,
             "clientAuthenticatorType": "client-secret",
-            "secret": "REDACTED_CLIENT_SECRET",
             "redirectUris": [
                 "/*"
             ],
@@ -2269,88 +2266,6 @@
                 "config": {
                     "allow-default-scopes": [
                         "true"
-                    ]
-                }
-            }
-        ],
-        "org.keycloak.keys.KeyProvider": [
-            {
-                "id": "17f41d41-1e7c-4969-9a66-a8ef48b9ac60",
-                "name": "rsa-generated",
-                "providerId": "rsa-generated",
-                "subComponents": {},
-                "config": {
-                    "privateKey": [
-                        "REDACTED_REALM_KEY"
-                    ],
-                    "keyUse": [
-                        "SIG"
-                    ],
-                    "certificate": [
-                        "MIICnTCCAYUCBgGaWgWWkzANBgkqhkiG9w0BAQsFADASMRAwDgYDVQQDDAdTYW5kb3JpMB4XDTI1MTEwNjE2MzMyN1oXDTM1MTEwNjE2MzUwN1owEjEQMA4GA1UEAwwHU2FuZG9yaTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALXSH6lzBVcStSmCryPcjvR8H30VLN4ggBxKDlKQO90n1HJq72dpn8UN7M3Wznrc8+5WxhHvuN1OFxm3jcWqb3ztC2eLZknBjCAw0cyCtWYtkw8mw2f4/uPUyTejyKTcJX5MnnKnIE2Zfolj7sTU0/MHXpx1D/OGDFpJYKVsxiG8YOatzMztH/e1C62XCDehFgrvRrrJ9IioN739S+1O9lfgDKA4mFV3vvUqzmN5ZJTAgbPzTfRWKPEivX+Jlq/D8FcJCisBDelAJnnS6p3ut6J/CepvTHyIkALGrYzIzchdjX0VZVgB143STFtdkCKQkhJrWpRiWtUen0hFQc00ePcCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEArFeYfJ4goOYdul8+rIcHnhP8TshjqkSXGmUMvVTEcCavvhHFtddU/SLvNyULL1qkf0lWx+JHd8CdG2ysZ0FQPYvs4l60XrHihIkdHh6A9BjJvetd1nEO05tQ/jO3uCZ1+HGRVv0Yb6WkEA+BAKm5Ofvf6AE9m6U3fKtkV4IDRmyFhHNIqas4W1v43lKDXz3s+mZw04KeoY2iJdwN2bzyrCkD8Fl0FT1b6Drkoo+X4hZX/a8K1d6XZjZxWc2AQsSnM5mONM5aI0M3zYyLGDLi7bI3o+CKkyQVbahl73Jfcu5U5I4+/U0YX6p7J96HVqANRHMOgFrYEF8LgiYrG7onPg=="
-                    ],
-                    "priority": [
-                        "100"
-                    ]
-                }
-            },
-            {
-                "id": "e36e3414-28a0-48af-beea-7a8dde206d46",
-                "name": "hmac-generated-hs512",
-                "providerId": "hmac-generated",
-                "subComponents": {},
-                "config": {
-                    "kid": [
-                        "b2916d0a-57b3-4a75-ac12-991c11739c09"
-                    ],
-                    "secret": [
-                        "REDACTED_REALM_KEY"
-                    ],
-                    "priority": [
-                        "100"
-                    ],
-                    "algorithm": [
-                        "HS512"
-                    ]
-                }
-            },
-            {
-                "id": "55699ff0-c02a-4790-a015-895d05c3781a",
-                "name": "rsa-enc-generated",
-                "providerId": "rsa-enc-generated",
-                "subComponents": {},
-                "config": {
-                    "privateKey": [
-                        "REDACTED_REALM_KEY"
-                    ],
-                    "keyUse": [
-                        "ENC"
-                    ],
-                    "certificate": [
-                        "MIICnTCCAYUCBgGaWgWXKzANBgkqhkiG9w0BAQsFADASMRAwDgYDVQQDDAdTYW5kb3JpMB4XDTI1MTEwNjE2MzMyN1oXDTM1MTEwNjE2MzUwN1owEjEQMA4GA1UEAwwHU2FuZG9yaTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALxcknpSUWzCy+R5Pi/YDZBrfiostpnFtyohWbmCmNuarPEmeeoxkFuWYrUPYF9ZHuI58rn5CBlmBD/iI7C6DuxDNk7BgaVhsVgb4JKFMmeQ4OqZsNm7hpOFrdAlaPMjfCCDWT8AtcpvPFV9Q2q9hoVdSeXvZongU723qAN5j+A61S939S69Iek1YQ34iG4iD1rgTI/7Ja4uwIvOys7MyUnNznvZui4bI1C6jPHbJXIdEaGm2kJdgep+oAvAIYioKpw+k/f1nODXb5kmodqlnhqHR1fegrsDena1cxVedcpJjO414WeTiE7wj6lzt/OYjdUOpanHuxmDRoUAfdMQVZ0CAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAInAZ5ll74VpiM/F076o80pAb9BM9CpvPEhHxluEL0t9UIe4FAcdKeBTSn8wS8BLF60M4vqKSE/G5TBga6b5hLvJRxD79NJPn97ctW14MzRwNaDfs4tZk6gOF8J34bY5Q7kCdgIHfBzdTRgymtkOmsfCWoYHKB+98HtewbPVC9ZrOZSYNdWuETUdCCKjLwmDQiaV2S+7UjdKZXj7v5REp15fvcG0PUsiE5nXDfGjn4Nk86NvoQlIFVIYSP8sAVPsXzDaM9ukf/RhEmNO+it7ByoZTr0MaO8Ba24VFIs96rzxiv1bUG3/vx1LzJgow5ION5sioRNPYxbhEx2b9aJ2W5g=="
-                    ],
-                    "priority": [
-                        "100"
-                    ],
-                    "algorithm": [
-                        "RSA-OAEP"
-                    ]
-                }
-            },
-            {
-                "id": "4de62561-8980-4c49-ac1b-47683b37aebb",
-                "name": "aes-generated",
-                "providerId": "aes-generated",
-                "subComponents": {},
-                "config": {
-                    "kid": [
-                        "d94665b1-f845-47cf-9004-924a049f2da6"
-                    ],
-                    "secret": [
-                        "REDACTED_REALM_KEY"
-                    ],
-                    "priority": [
-                        "100"
                     ]
                 }
             }
