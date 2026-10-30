@@ -30,7 +30,7 @@ public class UserDeletionListenerFactory implements EventListenerProviderFactory
         }
     };
 
-    private final UserPreRemovedHandler handler = new UserPreRemovedHandler();
+    private UserPreRemovedHandler handler;
 
     @Override
     public EventListenerProvider create(KeycloakSession session) {
@@ -39,6 +39,8 @@ public class UserDeletionListenerFactory implements EventListenerProviderFactory
 
     @Override
     public void init(Config.Scope config) {
+        // 환경변수(SANDOL_DELETION_*)에서 설정을 읽어 Handler를 만든다.
+        handler = UserPreRemovedHandler.fromEnvironment(System::getenv);
     }
 
     @Override
