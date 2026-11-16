@@ -34,20 +34,24 @@ public record DeletionPayload(
 
     //사용자에게 연결된 외부 로그인(IdP) 하나.
     //refreshToken은 Apple이고 토큰이 저장되어 있을 때만 값이 있다.
-    public record LinkedIdentity(String provider, String providerUserId, String refreshToken) {
+    // clientId도 마찬가지이며, 저장된 id_token의 aud(Apple 토큰 취소(revoke)에 쓰는 client_id)에서 꺼낸다.
+    public record LinkedIdentity(String provider, String providerUserId, String refreshToken, String clientId) {
 
         public Map<String, Object> toJsonMap() {
             Map<String, Object> json = new LinkedHashMap<>();
             json.put("provider", provider);
             json.put("provider_user_id", providerUserId);
             json.put("refresh_token", refreshToken);
+            json.put("client_id", clientId);
             return json;
         }
 
         // 실수로 로그에 찍혀도 토큰 값이 드러나지 않게 한다.
+        // client_id는 비밀이 아니라서 값을 그대로 보여 준다.
         @Override
         public String toString() {
-            return "LinkedIdentity[provider=" + provider + ", hasRefreshToken=" + (refreshToken != null) + "]";
+            return "LinkedIdentity[provider=" + provider + ", clientId=" + clientId
+                    + ", hasRefreshToken=" + (refreshToken != null) + "]";
         }
     }
 }
