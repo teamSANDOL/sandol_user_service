@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.net.http.HttpTimeoutException;
 import java.time.Duration;
 
 import org.keycloak.util.JsonSerialization;
@@ -41,16 +42,20 @@ public class DeletionRelay {
         int status;
         try {
             status = http.send(request, HttpResponse.BodyHandlers.discarding()).statusCode();
+        } catch (HttpTimeoutException e) {
+            // 정해진 시간 안에 연결하거나 응답받지 못함. IOException의 하위 클래스라서 먼저 잡는다.
+            throw new RelayException(BlockReason.RELAY_TIMEOUT, "auth-relay did not respond in time", e);
         } catch (IOException e) {
-            // 연결 실패, 시간 초과 등
-            throw new RelayException("request to auth-relay failed: " + e.getClass().getSimpleName(), e);
+            // 연결 거부, 주소를 찾지 못함, 연결 끊김 등
+            throw new RelayException(BlockReason.RELAY_UNREACHABLE,
+                    "request to auth-relay failed: " + e.getClass().getSimpleName(), e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RelayException("request to auth-relay was interrupted", e);
+            throw new RelayException(BlockReason.INTERNAL_ERROR, "request to auth-relay was interrupted", e);
         }
 
         if (status != ACCEPTED) {
-            throw new RelayException("auth-relay responded with status " + status);
+            throw RelayException.rejected(status);
         }
     }
 
@@ -60,7 +65,7 @@ public class DeletionRelay {
             byte[] plaintext = JsonSerialization.writeValueAsBytes(payload.toJsonMap());
             return JsonSerialization.writeValueAsBytes(encryptor.encrypt(plaintext));
         } catch (IOException e) {
-            throw new RelayException("failed to serialize deletion payload", e);
+            throw new RelayException(BlockReason.INTERNAL_ERROR, "failed to serialize deletion payload", e);
         }
     }
 }

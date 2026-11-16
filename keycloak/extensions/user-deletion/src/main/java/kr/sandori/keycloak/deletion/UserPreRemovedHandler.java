@@ -52,26 +52,36 @@ public class UserPreRemovedHandler {
     }
 
     public void handle(UserModel.UserPreRemovedEvent event) {
+        String realm = event.getRealm().getName();
         // 대상 realm이 아니면 (예: master의 관리자 계정) 아무것도 하지 않는다.
-        if (!realms.contains(event.getRealm().getName())) {
+        if (!realms.contains(realm)) {
             return;
         }
+        String userId = event.getUser().getId();
 
-        DeletionPayload payload = collector.collect(event);
+        DeletionPayload payload;
+        try {
+            payload = collector.collect(event);
+        } catch (RuntimeException e) {
+            // 정보를 모으다 실패하면 eventId와 연동 목록을 알 수 없다.
+            logBlocked(realm, userId, null, BlockReason.INTERNAL_ERROR, null, e);
+            throw unavailable();
+        }
         LOG.infof("[sandol-user-deletion] collected: realm=%s, userId=%s, hasEmail=%s, identities=%s",
                 payload.realm(), payload.userId(), payload.email() != null, describe(payload.identities()));
 
-        // Apple 연동인데 토큰이 없으면 Store tokens 설정을 확인하라고 경고한다.
-        boolean appleWithoutToken = payload.identities().stream()
-                .anyMatch(i -> DeletionPayloadCollector.APPLE.equals(i.provider()) && i.refreshToken() == null);
-        if (appleWithoutToken) {
-            LOG.warnf("[sandol-user-deletion] Apple refresh token not found for userId=%s. "
+        // Apple 연동인데 토큰이나 client_id가 없으면 Store tokens 설정을 확인하라고 경고한다.
+        boolean appleIncomplete = payload.identities().stream()
+                .anyMatch(i -> DeletionPayloadCollector.APPLE.equals(i.provider())
+                        && (i.refreshToken() == null || i.clientId() == null));
+        if (appleIncomplete) {
+            LOG.warnf("[sandol-user-deletion] Apple refresh token or client_id not found for userId=%s. "
                     + "Check that 'Store tokens' is enabled on the Apple identity provider.", payload.userId());
         }
 
         if (configError != null) {
-            LOG.errorf("[sandol-user-deletion] deletion blocked: userId=%s, reason=invalid configuration (%s)",
-                    payload.userId(), configError);
+            // 상세 사유는 Keycloak 시작 로그에 한 번 남겼다.
+            logBlocked(realm, userId, payload, BlockReason.CONFIG_INVALID, null, null);
             throw unavailable();
         }
         if (relay == null) {
@@ -82,13 +92,31 @@ public class UserPreRemovedHandler {
 
         try {
             relay.send(payload);
+        } catch (RelayException e) {
+            logBlocked(realm, userId, payload, e.reason(), e.status(), e);
+            throw unavailable();
         } catch (RuntimeException e) {
-            LOG.errorf(e, "[sandol-user-deletion] deletion blocked: userId=%s, eventId=%s, reason=%s",
-                    payload.userId(), payload.eventId(), e.getMessage());
+            logBlocked(realm, userId, payload, BlockReason.INTERNAL_ERROR, null, e);
             throw unavailable();
         }
         LOG.infof("[sandol-user-deletion] sent to auth-relay: userId=%s, eventId=%s",
                 payload.userId(), payload.eventId());
+    }
+
+    // 탈퇴를 막았다는 로그를 남긴다.
+    // 예상된 실패(relay·설정)는 한 줄만 남기고, 원인 예외는 DEBUG 로그를 켰을 때만 보인다.
+    // INTERNAL_ERROR는 원인을 알 방법이 스택뿐이라 함께 남긴다.
+    private static void logBlocked(String realm, String userId, DeletionPayload payload,
+                                   BlockReason reason, Integer status, Throwable cause) {
+        String line = reason.logLine(realm, userId, payload, status);
+        if (reason == BlockReason.INTERNAL_ERROR) {
+            LOG.error(line, cause);
+            return;
+        }
+        LOG.error(line);
+        if (cause != null) {
+            LOG.debug(line, cause);
+        }
     }
 
     // 탈퇴를 막을 때 던지는 예외. 트랜잭션이 롤백되어 사용자가 삭제되지 않는다.
@@ -99,10 +127,12 @@ public class UserPreRemovedHandler {
     }
 
     // 로그에는 토큰 값을 남기지 않고 "있음/없음"만 남긴다.
+    // client_id는 비밀이 아니라서 값을 그대로 남긴다.
     private static String describe(List<DeletionPayload.LinkedIdentity> identities) {
         return identities.stream()
                 .map(i -> DeletionPayloadCollector.APPLE.equals(i.provider())
-                        ? i.provider() + "(refreshToken=" + (i.refreshToken() != null ? "yes" : "no") + ")"
+                        ? i.provider() + "(refreshToken=" + (i.refreshToken() != null ? "yes" : "no")
+                                + ", clientId=" + (i.clientId() != null ? i.clientId() : "none") + ")"
                         : i.provider())
                 .toList()
                 .toString();

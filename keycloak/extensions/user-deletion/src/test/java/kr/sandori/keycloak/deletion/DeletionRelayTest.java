@@ -1,6 +1,7 @@
 package kr.sandori.keycloak.deletion;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
@@ -29,7 +30,7 @@ class DeletionRelayTest {
     private static final String KEY = Base64.getEncoder().encodeToString(new byte[32]);
     private static final DeletionPayload PAYLOAD = new DeletionPayload(
             "event-1", "2026-10-30T00:00:00Z", "Sandori", "user-1", "user@example.com",
-            List.of(new DeletionPayload.LinkedIdentity("apple", "001234.apple", "r.apple-refresh")));
+            List.of(new DeletionPayload.LinkedIdentity("apple", "001234.apple", "r.apple-refresh", "kr.sandori.app")));
 
     private HttpServer server;
 
@@ -56,6 +57,7 @@ class DeletionRelayTest {
         assertEquals("user@example.com", json.get("email"));
         Map<?, ?> apple = (Map<?, ?>) ((List<?>) json.get("identities")).get(0);
         assertEquals("r.apple-refresh", apple.get("refresh_token"));
+        assertEquals("kr.sandori.app", apple.get("client_id"));
     }
 
     // 202가 아니면 (예: 500) 실패다.
@@ -63,17 +65,35 @@ class DeletionRelayTest {
     void failsWhenStatusIsNot202() throws Exception {
         URI url = startServer(500, 0, new AtomicReference<>());
 
-        assertThrows(RelayException.class, () -> relay(url, Duration.ofSeconds(2)).send(PAYLOAD));
+        RelayException e = assertThrows(RelayException.class,
+                () -> relay(url, Duration.ofSeconds(2)).send(PAYLOAD));
+        assertEquals(BlockReason.RELAY_REJECTED, e.reason());
+        assertEquals(500, e.status());
+    }
+
+    // 200처럼 성공 계열이어도 202(영구 저장 완료)가 아니면 실패다.
+    @Test
+    void failsWhenStatusIs200() throws Exception {
+        URI url = startServer(200, 0, new AtomicReference<>());
+
+        RelayException e = assertThrows(RelayException.class,
+                () -> relay(url, Duration.ofSeconds(2)).send(PAYLOAD));
+        assertEquals(BlockReason.RELAY_REJECTED, e.reason());
+        assertEquals(200, e.status());
     }
 
     // auth-relay가 꺼져 있으면 실패다.
+    // Windows는 닫힌 포트의 연결 거부에 약 2초가 걸려서, 시간 초과로 잘못 나오지 않게 시간 제한을 넉넉히 준다.
     @Test
     void failsWhenRelayIsDown() throws Exception {
         URI url = startServer(202, 0, new AtomicReference<>());
         server.stop(0);
         server = null;
 
-        assertThrows(RelayException.class, () -> relay(url, Duration.ofSeconds(2)).send(PAYLOAD));
+        RelayException e = assertThrows(RelayException.class,
+                () -> relay(url, Duration.ofSeconds(10)).send(PAYLOAD));
+        assertEquals(BlockReason.RELAY_UNREACHABLE, e.reason());
+        assertNull(e.status());
     }
 
     // 정해진 시간 안에 답이 없으면 실패다.
@@ -81,7 +101,10 @@ class DeletionRelayTest {
     void failsOnTimeout() throws Exception {
         URI url = startServer(202, 3000, new AtomicReference<>());
 
-        assertThrows(RelayException.class, () -> relay(url, Duration.ofSeconds(1)).send(PAYLOAD));
+        RelayException e = assertThrows(RelayException.class,
+                () -> relay(url, Duration.ofSeconds(1)).send(PAYLOAD));
+        assertEquals(BlockReason.RELAY_TIMEOUT, e.reason());
+        assertNull(e.status());
     }
 
     private static DeletionRelay relay(URI url, Duration timeout) {

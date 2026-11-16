@@ -14,8 +14,8 @@ class DeletionPayloadTest {
 
     private static final DeletionPayload PAYLOAD = new DeletionPayload(
             "event-1", "2026-10-30T00:00:00Z", "Sandori", "user-1", "user@example.com",
-            List.of(new DeletionPayload.LinkedIdentity("apple", "001234.apple", "r.secret-refresh"),
-                    new DeletionPayload.LinkedIdentity("kakao", "987654321", null)));
+            List.of(new DeletionPayload.LinkedIdentity("apple", "001234.apple", "r.secret-refresh", "kr.sandori.app"),
+                    new DeletionPayload.LinkedIdentity("kakao", "987654321", null, null)));
 
     // 필드 이름이 snake_case로 바뀐다.
     @Test
@@ -32,7 +32,9 @@ class DeletionPayloadTest {
         assertEquals("apple", apple.get("provider"));
         assertEquals("001234.apple", apple.get("provider_user_id"));
         assertEquals("r.secret-refresh", apple.get("refresh_token"));
+        assertEquals("kr.sandori.app", apple.get("client_id"));
         assertNull(kakao.get("refresh_token"));
+        assertNull(kakao.get("client_id"));
     }
 
     // toString에는 이메일과 토큰 값이 나오지 않는다.

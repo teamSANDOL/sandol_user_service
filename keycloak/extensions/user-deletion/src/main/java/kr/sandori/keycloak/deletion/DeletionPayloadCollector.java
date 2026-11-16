@@ -35,12 +35,14 @@ public class DeletionPayloadCollector {
                 identities);
     }
 
-    // IdP 연동 하나를 변환한다. Apple이면 저장된 토큰에서 refresh token을 꺼낸다.
+    // IdP 연동 하나를 변환한다. Apple이면 저장된 토큰에서 refresh token과 client_id를 꺼낸다.
     private static DeletionPayload.LinkedIdentity toLinkedIdentity(FederatedIdentityModel link) {
         String provider = link.getIdentityProvider().toLowerCase(Locale.ROOT);
-        String refreshToken = APPLE.equals(provider)
-                ? StoredTokenParser.refreshToken(link.getToken())
-                : null;
-        return new DeletionPayload.LinkedIdentity(provider, link.getUserId(), refreshToken);
+        if (!APPLE.equals(provider)) {
+            return new DeletionPayload.LinkedIdentity(provider, link.getUserId(), null, null);
+        }
+        String storedToken = link.getToken();
+        return new DeletionPayload.LinkedIdentity(provider, link.getUserId(),
+                StoredTokenParser.refreshToken(storedToken), StoredTokenParser.clientId(storedToken));
     }
 }
