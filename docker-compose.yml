@@ -20,7 +20,7 @@ services:
 
   keycloak:
     container_name: keycloak
-    image: quay.io/keycloak/keycloak:26.3.2
+    image: quay.io/keycloak/keycloak:26.8.1
     command: ["start"]
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USERNAME:-admin}
@@ -45,8 +45,8 @@ services:
     volumes:
       - keycloak_data:/opt/keycloak/data
       - ./web/keycloak-theme:/opt/keycloak/themes:ro
-      # Apple 로그인 확장 jar (klausbetz/apple-identity-provider-keycloak, Apache-2.0)
-      # Keycloak 26.3.0~26.4.7 → 1.15.0~1.16.0 / 26.5.0 이상 → 1.17.0 이상, Keycloak 버전 올릴 때 jar도 교체
+      # Apple 로그인 확장 jar (teamSANDOL/apple-identity-provider-keycloak, klausbetz 원본 fork, Apache-2.0)
+      # Keycloak 26.8.1 → 1.17.0-sandol.1 / Keycloak 버전 올릴 때 fork에서 다시 빌드해 jar도 교체
       - ./keycloak/providers:/opt/keycloak/providers:ro
     depends_on:
       keycloak-db:
