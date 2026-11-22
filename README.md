@@ -362,6 +362,106 @@ docker compose up -d keycloak-db keycloak
 
 ---
 
+## 📌 회원 탈퇴 확장
+
+`keycloak/extensions/user-deletion`은 Keycloak 계정이 삭제되기 직전에 연동 정보(IdP 종류, Apple refresh token과 client_id, 이메일)를 모아 암호화한 뒤 auth-relay로 보내는 Keycloak 확장입니다. Apple 토큰 폐기, 카카오 연결 해제, 재시도, 실패 메일은 auth-relay가 담당합니다.
+
+- 대상 realm(기본 `Sandori`)의 사용자만 처리하며, master의 관리자 계정은 처리하지 않습니다.
+- auth-relay가 `202`로 응답해야 삭제가 진행됩니다. 연결 실패, 시간 초과, `202` 외 응답이면 삭제를 취소하고 계정을 그대로 둡니다.
+- 관리자 API(`DELETE /admin/realms/{realm}/users/{id}`)로 삭제하다 막히면 `503` `{"error":"account_deletion_unavailable"}`을 돌려줍니다. 사용자가 탈퇴 화면에서 탈퇴하다 막힌 경우에는 이 응답을 받지 않습니다.
+
+### 설정
+
+`docker-compose.yml`의 `keycloak` 서비스가 `.env`에서 아래 값을 받습니다.
+
+| 환경 변수 | 기본값 | 설명 |
+| --- | --- | --- |
+| `SANDOL_DELETION_RELAY_URL` | (없음) | auth-relay 수신 주소 (예: `http://auth-relay:8000/relay/internal/account-deletions`) |
+| `SANDOL_DELETION_KEY` | (없음) | AES-256 키(32바이트를 Base64로 적은 값). auth-relay와 같은 값 |
+| `SANDOL_DELETION_KEY_ID` | `v1` | 키 식별자 |
+
+- `SANDOL_DELETION_RELAY_URL`이 비어 있으면 auth-relay로 보내지 않고 경고 로그만 남긴 채 삭제를 허용합니다. 운영에서는 반드시 설정해야 합니다.
+- 값이 잘못되어 있으면(예: 키가 32바이트가 아님) 시작할 때 ERROR 로그를 남기고, 고칠 때까지 대상 realm의 삭제를 모두 막습니다.
+- 대상 realm(`SANDOL_DELETION_REALMS`, 기본 `Sandori`)과 대기 시간(`SANDOL_DELETION_TIMEOUT_SECONDS`, 기본 `5`)은 바꿔야 할 때만 compose에 추가합니다.
+
+키 생성:
+
+```bash
+openssl rand -base64 32
+```
+
+### Keycloak 탈퇴 기능 켜기
+
+사용자가 직접 탈퇴하는 Keycloak 내장 화면(Delete Account)은 기본으로 꺼져 있고, `base_data`의 realm에도 꺼져 있습니다. 관리자 콘솔의 대상 realm에서 아래 두 가지를 모두 켜야 쓸 수 있습니다.
+
+1. Authentication → Required actions → `Delete Account`를 Enabled로 바꿉니다.
+2. Realm settings → User registration → Default roles에 `account` 클라이언트의 `delete-account` 역할을 추가합니다. 기본 역할 묶음(`default-roles-sandori`)에 들어가므로 기존 사용자에게도 적용됩니다.
+
+### 탈퇴 화면 열기와 결과
+
+로그인할 때와 같은 인가 요청(`{issuer}/protocol/openid-connect/auth`, PKCE 포함)에 `kc_action=delete_account` 파라미터만 더해서 엽니다.
+
+- 이미 로그인되어 있어도 항상 다시 인증합니다(비밀번호 또는 연동된 IdP 버튼).
+- Apple로 다시 인증하면 그때 Apple 토큰이 저장되므로(Store tokens가 켜져 있을 때), 전에 Apple로 로그인한 적이 없어도 refresh token과 client_id가 전달됩니다.
+- 취소하면 `redirect_uri?kc_action=delete_account&kc_action_status=cancelled&code=…`로 돌아옵니다. 계정은 그대로이고 이 확장도 실행되지 않습니다.
+- 탈퇴에 성공하면 Keycloak 완료 화면이 나옵니다. 앱으로 자동으로 돌아가지 않으며, "서비스로 돌아가기" 버튼은 클라이언트의 Base URL로 이동합니다.
+- auth-relay 문제로 막히면 계정은 그대로 남습니다.
+- 성공 결과가 redirect로 오지 않으므로, 앱은 화면이 닫힌 뒤 토큰 갱신을 시도해서 계정이 남아 있는지 확인해야 합니다. 삭제된 사용자는 세션이 없어져 갱신이 거부됩니다.
+- Keycloak에는 사용자가 자기 계정을 지우는 REST API가 없습니다(`DELETE {issuer}/account`는 26.3.2와 26.8.1 모두 405). 사용자 탈퇴는 이 화면으로만 합니다.
+
+### 빌드와 반영
+
+```bash
+cd keycloak/extensions/user-deletion
+./gradlew build   # JDK 21 필요, 테스트 포함
+cp build/libs/sandol-user-deletion-*.jar ../../providers/
+```
+
+- 빌드한 jar는 Apple 확장 jar처럼 `keycloak/providers/`에 커밋합니다. 코드를 고치면 다시 빌드해서 jar도 함께 교체해야 합니다.
+- Keycloak을 재시작한 뒤 로그에서 설정 상태를 확인합니다.
+
+```bash
+docker compose restart keycloak
+docker compose logs keycloak | grep sandol-user-deletion
+```
+
+- `relay enabled: url=…`가 나오면 auth-relay로 보내는 상태입니다.
+- `SANDOL_DELETION_RELAY_URL is not set` 경고가 나오면 주소가 비어 있는 상태입니다. 로컬에서는 정상이며, auth-relay로 보내지 않고 삭제를 허용합니다.
+- `invalid configuration: …` ERROR가 나오면 값이 잘못된 상태입니다. 고칠 때까지 대상 realm의 삭제가 모두 막힙니다.
+- 테스트 사용자를 삭제하면 `collected: realm=…, userId=…, hasEmail=…, identities=[…]` 로그가 남습니다. 이어서 보냈으면 `sent to auth-relay`, 주소가 비어 있으면 `relay disabled` 경고가 남습니다.
+
+### 탈퇴 실패 로그
+
+탈퇴를 막으면 ERROR 로그 한 줄을 남깁니다. 토큰, 이메일, 키는 로그에 남기지 않습니다.
+
+```text
+[sandol-user-deletion] DELETION_BLOCKED realm=Sandori userId=… eventId=… reason=RELAY_REJECTED providers=apple,kakao status=500
+```
+
+- `providers`는 연동된 IdP 목록입니다. 연동이 없으면 `none`, 정보를 모으기 전에 실패하면 `-`입니다.
+- `status`는 `RELAY_REJECTED`일 때만 붙습니다.
+
+`reason` 값:
+
+- `RELAY_UNREACHABLE`: auth-relay에 연결하지 못했습니다(꺼짐, 주소 오류, 다른 Docker 네트워크).
+- `RELAY_TIMEOUT`: 대기 시간(기본 5초) 안에 응답이 없었습니다. auth-relay가 받아서 저장했는데 탈퇴만 막혔을 수 있으므로, auth-relay는 같은 사용자의 요청을 중복 처리할 수 있어야 합니다.
+- `RELAY_REJECTED`: auth-relay가 `202` 외의 상태 코드로 응답했습니다. 키가 서로 다르면 auth-relay가 복호화하지 못해 이 사유가 됩니다.
+- `CONFIG_INVALID`: `SANDOL_DELETION_*` 값이 잘못되었습니다. 원인은 Keycloak 시작 로그의 `invalid configuration: …` 줄에 있습니다.
+- `INTERNAL_ERROR`: 그 밖의 예상하지 못한 오류입니다. 이 사유만 스택 트레이스를 함께 남깁니다.
+
+Apple 연동 사용자인데 저장된 Apple 토큰이 없으면 `Apple refresh token or client_id not found for userId=…` 경고를 남깁니다. 탈퇴는 진행되지만 auth-relay가 Apple 토큰을 폐기할 수 없으므로, Apple IdP의 Store tokens가 켜져 있는지 확인합니다.
+
+### 운영 반영 체크리스트
+
+- [ ] 루트 `docker-compose.yml`의 `keycloak` 볼륨에 `sandol-user-deletion-0.1.0.jar` 파일 마운트 추가 (운영은 jar를 파일 단위로 마운트함. 탈퇴 PR 머지와 서브모듈 갱신 뒤에 추가하고, jar 파일 이름이 바뀌면 함께 수정)
+- [ ] `.env`에 `SANDOL_DELETION_RELAY_URL`, `SANDOL_DELETION_KEY` 설정 (auth-relay와 같은 키)
+- [ ] Keycloak과 auth-relay가 같은 Docker 네트워크에 있는지 확인
+- [ ] Apple IdP의 Store tokens 켜기 (꺼져 있으면 Apple refresh token을 보낼 수 없음)
+- [ ] `Delete Account` 켜기와 `delete-account` 기본 역할 추가 (위 "Keycloak 탈퇴 기능 켜기")
+- [ ] 로그에서 `[sandol-user-deletion] relay enabled` 확인
+
+---
+
 ## 📌 배포 가이드  
 
 - **(CI/CD 적용 여부 및 배포 자동화 여부를 설명하세요.)**  
