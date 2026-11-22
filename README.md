@@ -367,7 +367,7 @@ docker compose up -d keycloak-db keycloak
 `keycloak/extensions/user-deletion`은 Keycloak 계정이 삭제되기 직전에 연동 정보(IdP 종류, Apple refresh token과 client_id, 이메일)를 모아 암호화한 뒤 auth-relay로 보내는 Keycloak 확장입니다. Apple 토큰 폐기, 카카오 연결 해제, 재시도, 실패 메일은 auth-relay가 담당합니다.
 
 - 대상 realm(기본 `Sandori`)의 사용자만 처리하며, master의 관리자 계정은 처리하지 않습니다.
-- auth-relay가 `202`로 응답해야 삭제가 진행됩니다. 연결 실패, 시간 초과, `202` 외 응답이면 **삭제를 취소**하고 계정을 그대로 둡니다.
+- auth-relay가 `202`로 응답해야 삭제가 진행됩니다. 연결 실패, 시간 초과, `202` 외 응답이면 삭제를 취소하고 계정을 그대로 둡니다.
 - 관리자 API(`DELETE /admin/realms/{realm}/users/{id}`)로 삭제하다 막히면 `503` `{"error":"account_deletion_unavailable"}`을 돌려줍니다. 사용자가 탈퇴 화면에서 탈퇴하다 막힌 경우에는 이 응답을 받지 않습니다.
 
 ### 설정
@@ -380,7 +380,7 @@ docker compose up -d keycloak-db keycloak
 | `SANDOL_DELETION_KEY` | (없음) | AES-256 키(32바이트를 Base64로 적은 값). auth-relay와 같은 값 |
 | `SANDOL_DELETION_KEY_ID` | `v1` | 키 식별자 |
 
-- `SANDOL_DELETION_RELAY_URL`이 비어 있으면 auth-relay로 보내지 않고 경고 로그만 남긴 채 삭제를 허용합니다. **운영에서는 반드시 설정해야 합니다.**
+- `SANDOL_DELETION_RELAY_URL`이 비어 있으면 auth-relay로 보내지 않고 경고 로그만 남긴 채 삭제를 허용합니다. 운영에서는 반드시 설정해야 합니다.
 - 값이 잘못되어 있으면(예: 키가 32바이트가 아님) 시작할 때 ERROR 로그를 남기고, 고칠 때까지 대상 realm의 삭제를 모두 막습니다.
 - 대상 realm(`SANDOL_DELETION_REALMS`, 기본 `Sandori`)과 대기 시간(`SANDOL_DELETION_TIMEOUT_SECONDS`, 기본 `5`)은 바꿔야 할 때만 compose에 추가합니다.
 
@@ -453,9 +453,10 @@ Apple 연동 사용자인데 저장된 Apple 토큰이 없으면 `Apple refresh 
 
 ### 운영 반영 체크리스트
 
+- [ ] 루트 `docker-compose.yml`의 `keycloak` 볼륨에 `sandol-user-deletion-0.1.0.jar` 파일 마운트 추가 (운영은 jar를 파일 단위로 마운트함. 탈퇴 PR 머지와 서브모듈 갱신 뒤에 추가하고, jar 파일 이름이 바뀌면 함께 수정)
 - [ ] `.env`에 `SANDOL_DELETION_RELAY_URL`, `SANDOL_DELETION_KEY` 설정 (auth-relay와 같은 키)
 - [ ] Keycloak과 auth-relay가 같은 Docker 네트워크에 있는지 확인
-- [ ] Apple IdP의 **Store tokens** 켜기 (꺼져 있으면 Apple refresh token을 보낼 수 없음)
+- [ ] Apple IdP의 Store tokens 켜기 (꺼져 있으면 Apple refresh token을 보낼 수 없음)
 - [ ] `Delete Account` 켜기와 `delete-account` 기본 역할 추가 (위 "Keycloak 탈퇴 기능 켜기")
 - [ ] 로그에서 `[sandol-user-deletion] relay enabled` 확인
 
