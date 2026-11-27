@@ -460,6 +460,26 @@ textarea {
     border-color: var(--sandori-danger);
 }
 
+textarea.sandori-input {
+    height: auto;
+    min-height: 104px;
+    padding: 14px 20px;
+    resize: vertical;
+}
+
+.sandori-group-header {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 16px;
+}
+
+.sandori-group-description {
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--sandori-muted);
+}
+
 .sandori-select {
     appearance: auto;
 }
