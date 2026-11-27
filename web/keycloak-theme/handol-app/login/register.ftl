@@ -59,6 +59,10 @@
                     <#if hasStep2Attributes>
                         <div class="sandori-reg-step" data-reg-step="1">
                             <@fields.attributeFields step='1' reenter=reenterPassword/>
+                            <section class="sandori-reg-about">
+                            <strong>${msg("aboutTitle")}</strong>
+                            <p>${msg("aboutText")?no_esc}</p>
+                            </section>
                         </div>
                         <div class="sandori-reg-step" data-reg-step="2">
                             <@fields.attributeFields step='2'/>
@@ -76,11 +80,6 @@
                     <button class="sandori-btn sandori-reg-submit" type="submit">${msg("signUpButton")}</button>
                 </form>
             </main>
-
-            <section class="sandori-reg-about">
-                <strong>${msg("aboutTitle")}</strong>
-                <p>${msg("aboutText")?no_esc}</p>
-            </section>
 
             <footer>
                 <div class="sandori-footer-link-block">

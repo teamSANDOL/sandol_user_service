@@ -134,6 +134,11 @@
     margin-top: 8px;
 }
 
+.sandori-register .sandori-reg-about {
+    margin-top: 24px;
+    margin-bottom: 8px;
+}
+
 /* 동의 영역 */
 .sandori-consents {
     display: flex;
