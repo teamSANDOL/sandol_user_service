@@ -49,6 +49,11 @@
                 <div class="sandori-message sandori-message-${message.type}" role="alert">${kcSanitize(message.summary)?no_esc}</div>
             </#if>
 
+            <noscript>
+                <div class="sandori-message sandori-message-warning" role="alert">${msg("noscriptRegister")}</div>
+                <style>.sandori-register-form, .sandori-reg-about { display: none !important; }</style>
+            </noscript>
+
             <main>
                 <form id="kc-register-form" class="sandori-form sandori-register-form" action="${url.registrationAction}" method="post" novalidate>
                     <#if hasStep2Attributes>
