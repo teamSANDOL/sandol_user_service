@@ -55,7 +55,7 @@
             </noscript>
 
             <main>
-                <form id="kc-register-form" class="sandori-form sandori-register-form" action="${url.registrationAction}" method="post" novalidate>
+                <form id="kc-register-form" class="sandori-form sandori-register-form" action="${url.registrationAction}" method="post">
                     <#if hasStep2Attributes>
                         <div class="sandori-reg-step" data-reg-step="1">
                             <@fields.attributeFields step='1' reenter=reenterPassword/>
@@ -121,7 +121,7 @@
         </label>
         <div class="sandori-consent-item">
             <label class="sandori-check-row" for="consent-terms">
-                <input id="consent-terms" type="checkbox" data-consent<#if termsPrev> checked</#if>>
+                <input id="consent-terms" type="checkbox" name="termsAccepted" value="true" required data-consent<#if termsPrev> checked</#if>>
                 <span class="sandori-checkmark" aria-hidden="true"></span>
                 <span>${msg("termsRequired")}</span>
             </label>
@@ -129,7 +129,7 @@
         </div>
         <div class="sandori-consent-item">
             <label class="sandori-check-row" for="consent-privacy">
-                <input id="consent-privacy" type="checkbox" data-consent<#if termsPrev> checked</#if>>
+                <input id="consent-privacy" type="checkbox" required data-consent<#if termsPrev> checked</#if>>
                 <span class="sandori-checkmark" aria-hidden="true"></span>
                 <span>${msg("privacyRequired")}</span>
             </label>
@@ -137,14 +137,13 @@
         </div>
         <div class="sandori-consent-item">
             <label class="sandori-check-row" for="consent-overseas">
-                <input id="consent-overseas" type="checkbox" data-consent<#if termsPrev> checked</#if>>
+                <input id="consent-overseas" type="checkbox" required data-consent<#if termsPrev> checked</#if>>
                 <span class="sandori-checkmark" aria-hidden="true"></span>
                 <span>${msg("overseasRequired")}</span>
             </label>
             <a class="sandori-info-btn" href="${properties.overseasTransferUrl}" target="_blank" rel="noopener noreferrer" aria-label="${msg("overseasViewLabel")}"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="8"/><path d="M10 9v4.5"/><circle cx="10" cy="6.2" r=".6" fill="currentColor"/></svg></a>
         </div>
-        <#-- 서버에는 termsAccepted 하나만 보낸다. 필수 3개가 모두 체크되면 JS 가 disabled 를 푼다. -->
-        <input type="hidden" id="termsAccepted" name="termsAccepted" value="true" disabled>
+        <#-- 서버에는 termsAccepted 하나만 간다(이용약관 체크박스가 name 을 가짐). 필수 3개를 모두 required 로 두어 HTML 만으로도 3개 모두 체크해야 제출된다. JS 는 전체 동의·버튼 활성만 돕는다. -->
         <#if messagesPerField.existsError('termsAccepted')>
             <span class="sandori-field-error" role="alert">${kcSanitize(messagesPerField.get('termsAccepted'))?no_esc}</span>
         </#if>

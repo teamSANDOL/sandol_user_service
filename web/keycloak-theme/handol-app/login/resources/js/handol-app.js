@@ -108,7 +108,6 @@
         var firstStep = root.querySelector('[data-reg-step="1"]');
         var consents = root.querySelectorAll('[data-consent]');
         var consentAll = root.querySelector('[data-consent-all]');
-        var termsField = root.querySelector('#termsAccepted');
         var twoSteps = !!next;
         var touched = {};
 
@@ -165,7 +164,6 @@
             }
             var okConsents = consentsOk();
             if (consentAll) { consentAll.checked = consents.length > 0 && okConsents; }
-            if (termsField) { termsField.disabled = !okConsents; }
             if (submit) {
                 var needFirst = !twoSteps && firstStep ? stepValid(firstStep, true) : true;
                 submit.disabled = !(okConsents && needFirst);
@@ -265,12 +263,13 @@
     }
 
     ready(function () {
-        document.querySelectorAll('form.sandori-form').forEach(guardSubmit);
         keepFocusedVisible(document);
         var login = document.querySelector('.sandori-login');
         var register = document.querySelector('.sandori-register');
         if (login) { initLogin(login); }
         if (register) { initRegister(register); }
         initSheets();
+        // 중복 제출 방지는 단계 차단 등 다른 submit 핸들러가 preventDefault 한 뒤에 걸리도록 마지막에 등록한다.
+        document.querySelectorAll('form.sandori-form').forEach(guardSubmit);
     });
 })();

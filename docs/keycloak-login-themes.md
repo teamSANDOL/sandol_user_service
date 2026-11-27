@@ -48,7 +48,7 @@ docker exec -e KC_ADMIN_PW keycloak sh -c '
 '
 ```
 
-되돌리기: 앱 client의 `attributes.login_theme`을 `sandori`로 바꾸거나 값을 비운 뒤 캐시를 지우고 재시작한다.
+되돌리기: 아래 「handol-app 테마」 절의 롤백을 따른다.
 
 ## handol-app 테마
 
@@ -70,4 +70,4 @@ docker restart keycloak
 
 ### 롤백
 
-`handol-app` client 의 `attributes.login_theme`을 `handol`(이전 값)으로 되돌리고 캐시를 지운 뒤 재시작한다. 테마 디렉터리를 지워도 되며 다른 client 화면에는 영향이 없다.
+`handol-app` client 의 `attributes.login_theme`을 이전 값 `handol`로 되돌리고 캐시를 지운 뒤 재시작한다(`login_theme`을 비우면 realm 기본 `sandori`가 적용되므로 앱에는 맞지 않는다). 테마 디렉터리를 지워도 되며 다른 client 화면에는 영향이 없다.
