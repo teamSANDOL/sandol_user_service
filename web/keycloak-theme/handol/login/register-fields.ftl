@@ -19,7 +19,7 @@
                 <#local currentGroup = group>
                 <#if currentGroup != "">
                     <#local groupHeader = group.displayHeader!"">
-                    <div class="sandori-group-header" id="header-${group.name}">
+                    <div class="sandori-group-header" id="header-${group.name}"<#list group.html5DataAnnotations as key, value> data-${key}="${value}"</#list>>
                         <#if groupHeader != "">${advancedMsg(groupHeader)}<#else>${group.name!""}</#if>
                     </div>
                     <#if (group.displayDescription!"") != "">

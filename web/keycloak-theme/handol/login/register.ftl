@@ -32,7 +32,7 @@
             <div class="sandori-topbar">
                 <a class="sandori-back" href="${url.loginUrl}" data-action="reg-back" aria-label="${msg("backToLogin")}"><@parts.backArrow/></a>
                 <div class="sandori-topbar-end">
-                    <#if hasStep2Attributes><span class="sandori-step" data-template="${msg("registerStep", "{0}")}"></span></#if>
+                    <#if hasStep2Attributes><span class="sandori-step" aria-live="polite" data-template="${msg("registerStep", "{0}")}"></span></#if>
                     <@parts.localeSwitch/>
                 </div>
             </div>

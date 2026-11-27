@@ -114,14 +114,21 @@
 
         // 브라우저는 검증이 실패하면 submit 을 보내지 않고 invalid 만 발생시킨다(버블링 없음).
         // 숨은 단계의 필드가 invalid 이면 그 단계로 전환해 포커스와 안내를 보여 준다.
+        // 한 번의 제출에서 숨은 단계 invalid 가 여러 개여도 첫 필드만 전환·포커스하고 나머지는 기본 말풍선만 막는다.
         var switching = false;
         form.addEventListener('invalid', function (event) {
             var field = event.target;
             var stepBox = field.closest('[data-reg-step]');
-            if (!stepBox || switching) {
+            if (!stepBox) {
                 return;
             }
             var wanted = stepBox.getAttribute('data-reg-step');
+            if (switching) {
+                if (wanted !== root.getAttribute('data-step')) {
+                    event.preventDefault();
+                }
+                return;
+            }
             if (wanted === root.getAttribute('data-step')) {
                 return;
             }
