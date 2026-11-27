@@ -33,11 +33,6 @@
                     <div class="sandori-start-cta sandori-start-only">
                         <button type="button" class="sandori-btn" data-action="show-id">${msg("startWithId")}</button>
                     </div>
-                    <#if realm.password && realm.registrationAllowed && !registrationDisabled??>
-                        <div class="sandori-signup-section sandori-start-only">
-                            <span>${msg("noAccount")}</span><a href="${url.registrationUrl}">${msg("signUpLink")}</a>
-                        </div>
-                    </#if>
                 </div>
             </div>
 
