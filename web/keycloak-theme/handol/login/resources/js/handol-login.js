@@ -69,6 +69,11 @@
         var label = root.querySelector('.sandori-step');
         var firstStep = root.querySelector('[data-reg-step="1"]');
 
+        // 서버가 한 화면(single)으로 그렸으면 단계 전환이 필요 없다.
+        if (!form || !firstStep || !next) {
+            return;
+        }
+
         function setStep(step) {
             root.setAttribute('data-step', String(step));
             if (label) {
@@ -78,7 +83,7 @@
         }
 
         function firstStepValid() {
-            var fields = firstStep.querySelectorAll('input, select');
+            var fields = firstStep.querySelectorAll('input, select, textarea');
             for (var i = 0; i < fields.length; i += 1) {
                 if (!fields[i].checkValidity()) {
                     fields[i].reportValidity();
@@ -97,9 +102,7 @@
         if (label) {
             label.textContent = label.getAttribute('data-template').replace('{0}', root.getAttribute('data-step'));
         }
-        if (next) {
-            next.addEventListener('click', goNext);
-        }
+        next.addEventListener('click', goNext);
         if (back) {
             back.addEventListener('click', function (event) {
                 if (root.getAttribute('data-step') === '2') {
@@ -108,25 +111,42 @@
                 }
             });
         }
-        if (form) {
-            form.addEventListener('submit', function (event) {
-                if (root.getAttribute('data-step') === '1') {
-                    event.preventDefault();
-                    goNext();
-                    return;
-                }
-                // 숨은 1단계 필드가 비어 있으면 브라우저가 조용히 제출을 막으므로 그 단계로 되돌린다.
-                var invalid = Array.prototype.find.call(firstStep.querySelectorAll('input, select'), function (el) {
-                    return !el.checkValidity();
-                });
-                if (invalid) {
-                    event.preventDefault();
-                    setStep(1);
-                    invalid.focus();
-                    invalid.reportValidity();
-                }
-            });
-        }
+
+        // 브라우저는 검증이 실패하면 submit 을 보내지 않고 invalid 만 발생시킨다(버블링 없음).
+        // 숨은 단계의 필드가 invalid 이면 그 단계로 전환해 포커스와 안내를 보여 준다.
+        var switching = false;
+        form.addEventListener('invalid', function (event) {
+            var field = event.target;
+            var stepBox = field.closest('[data-reg-step]');
+            if (!stepBox || switching) {
+                return;
+            }
+            var wanted = stepBox.getAttribute('data-reg-step');
+            if (wanted === root.getAttribute('data-step')) {
+                return;
+            }
+            switching = true;
+            event.preventDefault();
+            setStep(wanted);
+            field.focus();
+            field.reportValidity();
+            setTimeout(function () { switching = false; }, 0);
+        }, true);
+
+        // 1단계에서 Enter 로 제출하면 숨은 2단계 필수값 때문에 막히므로 다음 단계로 넘긴다.
+        form.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' && root.getAttribute('data-step') === '1' &&
+                    event.target.tagName !== 'TEXTAREA' && event.target.tagName !== 'BUTTON') {
+                event.preventDefault();
+                goNext();
+            }
+        });
+        form.addEventListener('submit', function (event) {
+            if (root.getAttribute('data-step') === '1') {
+                event.preventDefault();
+                goNext();
+            }
+        });
     }
 
     ready(function () {
