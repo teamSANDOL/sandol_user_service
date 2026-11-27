@@ -56,7 +56,7 @@ docker exec -e KC_ADMIN_PW keycloak sh -c '
 - 화면 구성: 로그인(소셜·시작화면·로그인 상태 유지 없음, 뒤로 화살표 없음), 회원가입 1→2단계(같은 form, 2단계에서 동의 3개), 비밀번호 찾기, 정보 확인·계정 연결·약관·로그아웃·안내.
 - 필수 동의 3개(이용약관·개인정보 수집·이용·국외 이전)는 서버에 `termsAccepted` 하나로 합쳐 보낸다(3개 모두 체크해야 값이 전송됨). user profile 속성은 추가하지 않는다.
 - 약관·처리방침 주소는 `handol-app/login/theme.properties`의 `termsUrl`, `privacyPolicyUrl` 두 줄만 고치면 된다.
-- 로그인 오류 문구 중 `accountTemporarilyDisabledMessage`는 Keycloak이 임시 잠김일 때만 쓰며, 기본값은 잘못된 비밀번호와 같은 문구다. 이 테마는 잠김 안내로 바꿨으므로 잠김 여부가 화면에 드러난다. 원치 않으면 `messages_*.properties`에서 이 키를 지운다.
+- 로그인 오류 문구는 계정 상태를 드러내지 않는다. 잘못된 입력·사용자 없음·임시 잠김·영구 잠김·비활성 계정(`invalidUserMessage`, `invalidUsernameMessage`, `invalidPasswordMessage`, `accountTemporarilyDisabledMessage`, `accountPermanentlyDisabledMessage`, `accountDisabledMessage`)을 모두 「아이디 또는 비밀번호가 맞지 않아요.」(en: Incorrect username or password.)로 통일했다. 세션 만료 문구는 별도로 유지한다.
 - 앱 client 요건: public client, Standard flow, PKCE S256 필수, redirect URI `app.handol.student://oauthredirect`·`kr.sandori.handori://oauthredirect`, offline_access 허용.
 
 ### 적용
