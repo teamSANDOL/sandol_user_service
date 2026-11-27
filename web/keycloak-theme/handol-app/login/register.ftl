@@ -103,14 +103,7 @@
                     <a class="sandori-sheet-link" href="${properties.privacyPolicyUrl}" target="_blank" rel="noopener noreferrer">${msg("privacyPolicyLink")}</a>
                 </div>
             </dialog>
-            <#-- 국외 이전 바텀시트: 처리방침 해당 절로 가는 링크만 둔다(상세 항목은 처리방침 기준으로 확정되면 여기에 표로 추가) -->
-            <dialog id="sheet-overseas" class="sandori-sheet" aria-labelledby="sheet-overseas-title">
-                <div class="sandori-sheet-head"><h2 id="sheet-overseas-title">${msg("overseasRequired")}</h2><button type="button" class="sandori-sheet-close" data-sheet-close aria-label="${msg("closeLabel")}">&times;</button></div>
-                <div class="sandori-sheet-body">
-                    <p class="sandori-sheet-note">${msg("overseasNote")}</p>
-                    <a class="sandori-sheet-link" href="${properties.privacyPolicyUrl}" target="_blank" rel="noopener noreferrer">${msg("privacyPolicyLink")}</a>
-                </div>
-            </dialog>
+
 
             <#list profile.html5DataAnnotations?keys as key>
                 <script type="module" src="${url.resourcesPath}/js/${key}.js"></script>
@@ -149,7 +142,7 @@
                 <span class="sandori-checkmark" aria-hidden="true"></span>
                 <span>${msg("overseasRequired")}</span>
             </label>
-            <button type="button" class="sandori-info-btn" data-sheet-open="sheet-overseas" aria-label="${msg("overseasViewLabel")}"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="8"/><path d="M10 9v4.5"/><circle cx="10" cy="6.2" r=".6" fill="currentColor"/></svg></button>
+            <a class="sandori-info-btn" href="${properties.overseasTransferUrl}" target="_blank" rel="noopener noreferrer" aria-label="${msg("overseasViewLabel")}"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="8"/><path d="M10 9v4.5"/><circle cx="10" cy="6.2" r=".6" fill="currentColor"/></svg></a>
         </div>
         <#-- 서버에는 termsAccepted 하나만 보낸다. 필수 3개가 모두 체크되면 JS 가 disabled 를 푼다. -->
         <input type="hidden" id="termsAccepted" name="termsAccepted" value="true" disabled>
