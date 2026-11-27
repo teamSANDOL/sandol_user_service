@@ -118,7 +118,7 @@
     <#compress>
         <#if attribute.annotations.inputType??>
             <#if attribute.annotations.inputType?starts_with("html5-")>${attribute.annotations.inputType[6..]}<#else>${attribute.annotations.inputType}</#if>
-        <#else>text</#if>
+        <#elseif attribute.name == 'email'>email<#else>text</#if>
     </#compress>
 </#macro>
 
