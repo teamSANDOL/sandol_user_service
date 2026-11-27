@@ -70,6 +70,11 @@
                 </form>
             </main>
 
+            <section class="sandori-reg-about">
+                <strong>${msg("aboutTitle")}</strong>
+                <p>${msg("aboutText")?no_esc}</p>
+            </section>
+
             <footer>
                 <div class="sandori-footer-link-block">
                     <span>${msg("alreadyAccount")}</span><a href="${url.loginUrl}">${msg("backToLogin")}</a>

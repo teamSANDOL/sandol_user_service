@@ -664,6 +664,25 @@ textarea.sandori-input {
     display: block;
 }
 
+.sandori-reg-about {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 32px;
+    color: var(--sandori-muted);
+    font-size: 14px;
+    line-height: 16px;
+    text-align: center;
+}
+
+.sandori-reg-about strong {
+    font-weight: 700;
+}
+
+.sandori-js .sandori-register[data-step="2"] .sandori-reg-about {
+    display: none;
+}
+
 .sandori-terms-section {
     display: flex;
     flex-direction: column;
