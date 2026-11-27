@@ -62,6 +62,10 @@ docker compose up -d --build
 
 ---
 
+## 📌 로그인 테마
+
+client별 로그인 테마(앱 `handol`, 챗봇 `sandori`)와 운영 적용 절차는 [docs/keycloak-login-themes.md](docs/keycloak-login-themes.md)를 본다.
+
 ## 📌 Keycloak realm 백업/복원
 
 이 저장소의 Keycloak realm JSON 파일은 **Keycloak의 export 기능으로 생성한 결과물**입니다.

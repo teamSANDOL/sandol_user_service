@@ -1,31 +1,43 @@
 <#import "template.ftl" as layout>
-<#import "parts.ftl" as parts>
 <@layout.registrationLayout displayInfo=false displayMessage=false; section>
     <#if section = "header">
         ${msg("errorTitle")}
     <#elseif section = "form">
         <div class="sandori-auth-container sandori-centered">
-            <@parts.actionTop/>
-            <div class="sandori-body">
-                <@parts.appIcon small=true/>
-                <div class="sandori-status-icon sandori-status-error" aria-hidden="true">!</div>
+            <#if realm.internationalizationEnabled && locale?? && locale.supported?? && locale.supported?size gt 1>
+                <nav class="sandori-locale-switcher" aria-label="${msg("languageSelector")}">
+                    <#list locale.supported as l>
+                        <a class="sandori-locale-option<#if l.languageTag == locale.currentLanguageTag> is-active</#if>" href="${l.url}" lang="${l.languageTag}" hreflang="${l.languageTag}">
+                            ${l.languageTag?upper_case}
+                        </a>
+                    </#list>
+                </nav>
+            </#if>
+
+            <div class="sandori-logo-container sandori-logo-small">
+                <img src="${url.resourcesPath}/img/logo1.png" alt="${msg("serviceLogo")}">
+            </div>
+
+            <div class="sandori-status-icon sandori-status-error">!</div>
+
+            <header class="sandori-header">
                 <h1 class="sandori-action-title">${msg("errorHeading")}</h1>
                 <p class="sandori-action-subtitle"><#if message?has_content>${kcSanitize(message.summary)?no_esc}<#else>${msg("errorDefaultMessage")}</#if></p>
+            </header>
 
-                <div class="sandori-action-stack">
-                    <#if client?? && client.baseUrl?has_content>
-                        <a class="sandori-btn" href="${client.baseUrl}">${msg("backToService")}</a>
+            <div class="sandori-action-stack">
+                <#if client?? && client.baseUrl?has_content>
+                    <a class="sandori-btn sandori-btn-login" href="${client.baseUrl}">${msg("backToService")}</a>
+                </#if>
+                <#if !skipLink??>
+                    <#if client?? && client.clientId?? && client.clientId == "sandol-meal-web">
+                        <a class="sandori-link" href="/meal-web/auth/login">${msg("retryLogin")}</a>
+                    <#elseif client?? && client.baseUrl?has_content>
+                        <a class="sandori-link" href="${client.baseUrl}">${msg("retryLogin")}</a>
+                    <#else>
+                        <a class="sandori-link" href="${url.loginUrl}">${msg("retryLogin")}</a>
                     </#if>
-                    <#if !skipLink??>
-                        <#if client?? && client.clientId?? && client.clientId == "sandol-meal-web">
-                            <a class="sandori-text-link" href="/meal-web/auth/login">${msg("retryLogin")}</a>
-                        <#elseif client?? && client.baseUrl?has_content>
-                            <a class="sandori-text-link" href="${client.baseUrl}">${msg("retryLogin")}</a>
-                        <#else>
-                            <a class="sandori-text-link" href="${url.loginUrl}">${msg("retryLogin")}</a>
-                        </#if>
-                    </#if>
-                </div>
+                </#if>
             </div>
         </div>
     </#if>
