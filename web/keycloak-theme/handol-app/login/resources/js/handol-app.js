@@ -175,6 +175,10 @@
 
         form.addEventListener('input', function (event) {
             var field = event.target;
+            // 전체 동의는 input 이벤트에서 sync 를 돌리면 change 전에 체크가 되돌려지므로 제외한다.
+            if (field && field.hasAttribute('data-consent-all')) {
+                return;
+            }
             if (field && field.id) {
                 touched[field.id] = true;
                 // 서버가 알려 준 오류는 그 칸을 고치기 시작하면 지운다.
