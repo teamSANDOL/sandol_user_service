@@ -1,11 +1,14 @@
 <#import "template.ftl" as layout>
 <#import "parts.ftl" as parts>
 <#assign step1Error = messagesPerField.existsError('username','password','password-confirm','email','fullname')>
+<#assign step2Error = messagesPerField.existsError('nickname','birthdate','gender','termsAccepted')>
+<#-- 비밀번호는 서버가 다시 채워 주지 않으므로, 비밀번호 칸이 있으면 오류 재표시 때 항상 1단계로 연다 -->
+<#assign startStep = (!step1Error && step2Error && !passwordRequired??)?then(2, 1)>
 <@layout.registrationLayout displayInfo=false displayMessage=false; section>
     <#if section = "header">
         ${msg("registerTitle")}
     <#elseif section = "form">
-        <div class="sandori-auth-container sandori-register" data-step="<#if !step1Error && messagesPerField.existsError('nickname','birthdate','gender','termsAccepted')>2<#else>1</#if>">
+        <div class="sandori-auth-container sandori-register" data-step="${startStep}">
             <div class="sandori-topbar">
                 <a class="sandori-back" href="${url.loginUrl}" data-action="reg-back" aria-label="${msg("backToLogin")}"><@parts.backArrow/></a>
                 <div class="sandori-topbar-end">
@@ -42,6 +45,8 @@
                                 <input tabindex="2" id="password" class="sandori-input" name="password" type="password" autocomplete="new-password" required aria-invalid="<#if messagesPerField.existsError('password','password-confirm')>true<#else>false</#if>">
                                 <#if messagesPerField.existsError('password')>
                                     <span class="sandori-field-error" role="alert">${kcSanitize(messagesPerField.get('password'))?no_esc}</span>
+                                <#elseif step2Error && !step1Error>
+                                    <span class="sandori-input-message">${msg("passwordReenterHint")}</span>
                                 <#else>
                                     <span class="sandori-input-message">${msg("passwordPolicyHint")}</span>
                                 </#if>

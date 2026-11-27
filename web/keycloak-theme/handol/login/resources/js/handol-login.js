@@ -113,6 +113,17 @@
                 if (root.getAttribute('data-step') === '1') {
                     event.preventDefault();
                     goNext();
+                    return;
+                }
+                // 숨은 1단계 필드가 비어 있으면 브라우저가 조용히 제출을 막으므로 그 단계로 되돌린다.
+                var invalid = Array.prototype.find.call(firstStep.querySelectorAll('input, select'), function (el) {
+                    return !el.checkValidity();
+                });
+                if (invalid) {
+                    event.preventDefault();
+                    setStep(1);
+                    invalid.focus();
+                    invalid.reportValidity();
                 }
             });
         }

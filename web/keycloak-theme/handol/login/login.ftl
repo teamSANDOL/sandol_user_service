@@ -88,6 +88,8 @@
                             </label>
                         </#if>
 
+                        <input type="hidden" id="id-hidden-input" name="credentialId"<#if auth.selectedCredential?has_content> value="${auth.selectedCredential}"</#if>/>
+
                         <button tabindex="4" class="sandori-btn sandori-login-submit" name="login" id="kc-login" type="submit">${msg("loginButton")}</button>
                     </form>
 
