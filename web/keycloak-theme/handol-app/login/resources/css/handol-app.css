@@ -1,0 +1,287 @@
+/* 한돌이 앱 로그인 테마: handol 테마(handol-login.css) 위에 덮어쓰는 규칙만 둔다. */
+:root {
+    --sandori-muted-text: #04040480;   /* Figma text 50% 그대로(대비 약 4:1, 4.5:1 미달은 보고 사항) */
+}
+
+.sandori-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.sandori-subtitle,
+.sandori-action-subtitle,
+.sandori-input-message,
+.sandori-reg-about,
+.sandori-footer-link-block,
+.sandori-signup-section,
+.sandori-find-account-section,
+.sandori-optional {
+    color: var(--sandori-muted-text);
+}
+
+.sandori-optional {
+    font-size: 14px;
+}
+
+.sandori-signup-section a {
+    text-decoration: underline;
+}
+
+.sandori-find-account-section a {
+    color: var(--sandori-muted-text);
+}
+
+/* 입력 오류: 칸 아래 14px 빨강, 테두리도 같은 색 */
+.sandori-field-error {
+    font-size: 14px;
+    line-height: 16px;
+}
+
+/* 로그인: 위에서부터 쌓는다(아이콘 y≈156, 제목, 입력, 버튼) */
+.sandori-login .sandori-login-body {
+    margin-top: 72px;
+}
+
+.sandori-login .sandori-title {
+    margin-top: 8px;
+}
+
+.sandori-login .sandori-form {
+    margin-top: 51px;
+}
+
+.sandori-login .sandori-login-submit {
+    margin-top: 56px;
+}
+
+.sandori-login .sandori-message {
+    margin-top: 0;
+}
+
+.sandori-signup-section {
+    margin-top: 24px;
+}
+
+/* 버튼 비활성/로딩 */
+.sandori-btn:disabled,
+.sandori-btn.is-idle {
+    background: var(--sandori-idle);
+    cursor: not-allowed;
+}
+
+.sandori-btn.is-loading {
+    position: relative;
+    color: transparent;
+    pointer-events: none;
+}
+
+.sandori-btn.is-loading::after {
+    content: "";
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border: 3px solid #FDFDFD;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: sandori-spin 0.8s linear infinite;
+}
+
+@keyframes sandori-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sandori-btn.is-loading::after { animation-duration: 3s; }
+}
+
+.sandori-btn-secondary:disabled {
+    background: transparent;
+}
+
+/* 상단바: 뒤로 | STEP | 언어. 언어 알약은 80x24 */
+.sandori-register .sandori-topbar-end {
+    gap: clamp(12px, 14vw, 60px);
+}
+
+.sandori-locale-switcher {
+    width: 80px;
+    justify-content: space-between;
+}
+
+.sandori-locale-option {
+    min-width: 40px;
+}
+
+/* 가입 화면 간격은 Figma: 제목 138, 입력 214 */
+.sandori-register-head {
+    margin-top: 55px;
+}
+
+.sandori-register .sandori-register-form {
+    margin-top: 20px;
+}
+
+.sandori-register .sandori-reg-step {
+    gap: 8px;
+}
+
+.sandori-reg-submit {
+    margin-top: 8px;
+}
+
+.sandori-register .sandori-reg-about {
+    margin-top: 24px;
+    margin-bottom: 8px;
+}
+
+/* 동의 영역 */
+.sandori-consents {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sandori-consent-all {
+    color: var(--sandori-text);
+    font-weight: 700;
+}
+
+.sandori-consent-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.sandori-consent-item .sandori-check-row {
+    flex: 1 1 auto;
+    min-width: 0;
+    color: var(--sandori-muted-text);
+    font-size: 16px;
+}
+
+.sandori-info-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    margin-right: -12px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--sandori-muted-text);
+    cursor: pointer;
+}
+
+.sandori-info-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* 바텀시트 */
+.sandori-sheet {
+    width: 100%;
+    max-width: 430px;
+    max-height: 80dvh;
+    margin: auto auto 0;
+    padding: 0;
+    border: 0;
+    border-radius: 20px 20px 0 0;
+    background: var(--sandori-bg);
+    color: var(--sandori-text);
+    overflow: hidden;
+}
+
+.sandori-sheet[open] {
+    display: flex;
+    flex-direction: column;
+}
+
+.sandori-sheet::backdrop {
+    background: #04040466;
+}
+
+.sandori-sheet-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px 8px 24px;
+}
+
+.sandori-sheet-head h2 {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 24px;
+}
+
+.sandori-sheet-close {
+    width: 44px;
+    height: 44px;
+    border: 0;
+    background: transparent;
+    color: var(--sandori-text);
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.sandori-sheet-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 8px 24px calc(24px + env(safe-area-inset-bottom));
+    overflow-y: auto;
+}
+
+.sandori-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.sandori-table th,
+.sandori-table td {
+    padding: 8px 6px;
+    border: 1px solid var(--sandori-border);
+    text-align: left;
+    vertical-align: top;
+    word-break: keep-all;
+}
+
+.sandori-table thead th {
+    background: var(--sandori-tint);
+}
+
+.sandori-sheet-note {
+    color: var(--sandori-muted-text);
+    font-size: 14px;
+    line-height: 20px;
+    word-break: keep-all;
+}
+
+.sandori-sheet-link {
+    color: var(--sandori-primary);
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+/* 상태 화면 */
+.sandori-terms-form {
+    margin-top: 16px;
+}
+
+@media (max-width: 380px) {
+    .sandori-auth-container {
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+}
