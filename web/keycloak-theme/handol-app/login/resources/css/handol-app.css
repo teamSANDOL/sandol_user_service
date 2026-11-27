@@ -1,6 +1,6 @@
 /* 한돌이 앱 로그인 테마: handol 테마(handol-login.css) 위에 덮어쓰는 규칙만 둔다. */
 :root {
-    --sandori-muted-text: #04040499;   /* 본문 흐린 글자: 4.5:1 대비 확보(placeholder 는 Figma 50% 유지) */
+    --sandori-muted-text: #04040480;   /* Figma text 50% 그대로(대비 약 4:1, 4.5:1 미달은 보고 사항) */
 }
 
 .sandori-sr-only {
